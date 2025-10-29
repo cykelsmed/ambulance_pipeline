@@ -41,6 +41,13 @@ data/
 
 # OS
 Thumbs.db
+**/.DS_Store
+
+# Archive documentation
+docs/archive/
+
+# Validering Excel files (large - 385 MB)
+validering/*.xlsx
 
 # Temporary files
 *.tmp

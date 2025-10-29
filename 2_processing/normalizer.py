@@ -106,6 +106,15 @@ def normalize_postnummer(value: Any, mapping: Dict[str, int]) -> int:
         if value in mapping:
             return mapping[value]
 
+        # Check if format is "XXXX Bynavn" - extract just the number
+        if ' ' in value:
+            parts = value.split()
+            if parts[0].isdigit() and len(parts[0]) == 4:
+                try:
+                    return int(parts[0])
+                except ValueError:
+                    pass
+
         # Try to convert to int
         try:
             return int(value)

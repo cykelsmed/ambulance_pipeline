@@ -6,6 +6,8 @@ Automatiserbar data-analyse pipeline til ambulance-responstider i Danmark.
 
 ## Quick Start
 
+### Phase 1: Postnummer-Analyser
+
 ```bash
 # 1. Installér dependencies
 pip3 install -r requirements.txt
@@ -21,7 +23,58 @@ python3 pipeline.py
 
 **⚡ Performance:** Processerer 861,757 ambulance-ture fra 5 regioner på ~6 sekunder.
 
+### Phase 2: Tidsmæssige Analyser (NYT!)
+
+#### Single Region (Nordjylland)
+```bash
+# Kør temporal analyse for kun Nordjylland
+python3 run_temporal_analysis.py
+
+# Output (3 filer):
+# ✓ 05_responstid_per_time.xlsx
+# ✓ 06_responstid_per_maaned.xlsx
+# ✓ DATAWRAPPER CSV-filer + FUND.txt filer
+```
+
+**⚡ Performance:** Processerer 84,243 A-kørsler på ~16 sekunder.
+
+#### ALLE 5 Regioner (NYT!)
+```bash
+# Kør temporal analyse for ALLE regioner
+python3 run_all_regions_temporal.py
+
+# Output (30 filer - 6 per region):
+# ✓ {Region}_05_responstid_per_time.xlsx
+# ✓ {Region}_05_responstid_per_time_FUND.txt
+# ✓ {Region}_DATAWRAPPER_responstid_per_time.csv
+# ✓ {Region}_06_responstid_per_maaned.xlsx
+# ✓ {Region}_06_responstid_per_maaned_FUND.txt
+# ✓ {Region}_DATAWRAPPER_responstid_per_maaned.csv
+```
+
+**⚡ Performance:** Processerer 875,513 A-kørsler fra alle 5 regioner på ~3.5 minutter.
+
+**📊 Data Coverage:**
+| Region | A-cases | Coverage |
+|--------|---------|----------|
+| Nordjylland | 84,243 | 100% |
+| Hovedstaden | 237,358 | 100% |
+| Sjælland | 163,489 | 100% |
+| Midtjylland | 187,531 | 100% |
+| Syddanmark | 202,892 | 98.5% |
+| **TOTAL** | **875,513** | **99.6%** |
+
+**🔍 Fund (Nordjylland):**
+- Myldretiden er IKKE problemet (kl. 17 faktisk blandt de hurtigste)
+- Nattevagter er 24% langsommere end dagen
+- Værste tid: kl. 06:00 (12.1 min median)
+- Sæsonvariation: Kun 5.1% forskel (januar vs maj)
+
+---
+
 ## Output Filer
+
+### Phase 1: Postnummer-Niveau
 
 Pipeline genererer 5 TV2-klare analysefiler:
 
@@ -88,6 +141,57 @@ CSV-fil klar til Datawrapper-kort med farve-kategorisering.
 - 🟢 **Grøn:** <10 min (174 postnumre)
 - 🟡 **Gul:** 10-15 min (383 postnumre)
 - 🔴 **Rød:** >15 min (67 postnumre)
+
+---
+
+### Phase 2: Tidsmæssige Analyser
+
+#### Single Region Files (Nordjylland)
+
+**6. `05_responstid_per_time.xlsx` - Time-for-time analyse (0-23)**
+
+**Kolonner:**
+- Time (0-23), Antal_ture, Median_minutter, Gennemsnit_minutter, Std_minutter
+
+**7. `06_responstid_per_maaned.xlsx` - Månedlig analyse (1-12)**
+
+**Kolonner:**
+- Måned, Maaned_navn, Antal_ture, Median_minutter, Sæson
+
+**8-11. `DATAWRAPPER_*.csv` + `*_FUND.txt`**
+- Datawrapper-klare CSV'er
+- Journalistiske key findings
+
+#### Multi-Region Files (ALLE 5 regioner)
+
+**Per region** (30 filer total - 6 per region):
+
+**`{Region}_05_responstid_per_time.xlsx`**
+- Time-for-time analyse for hver region
+- Eksempel: `Hovedstaden_05_responstid_per_time.xlsx`
+
+**`{Region}_06_responstid_per_maaned.xlsx`**
+- Månedlig sæsonanalyse for hver region
+- Eksempel: `Syddanmark_06_responstid_per_maaned.xlsx`
+
+**`{Region}_DATAWRAPPER_responstid_per_time.csv`**
+- Datawrapper-klar time-kurve per region
+
+**`{Region}_DATAWRAPPER_responstid_per_maaned.csv`**
+- Datawrapper-klar månedskurve per region
+
+**`{Region}_05_responstid_per_time_FUND.txt`**
+- Journalistiske fund for tid-på-døgnet per region
+
+**`{Region}_06_responstid_per_maaned_FUND.txt`**
+- Journalistiske fund for sæsonvariation per region
+
+**Farvekategorier (konsistent på tværs af alle regioner):**
+- 🟢 **Grøn:** <10 min
+- 🟡 **Gul:** 10-15 min
+- 🔴 **Rød:** >15 min
+
+---
 
 ## Pipeline Statistik
 

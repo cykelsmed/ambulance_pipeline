@@ -1,0 +1,84 @@
+# Regional Configuration for Multi-Region Temporal Analyses
+# Column mappings for all 5 Danish regions
+
+regions:
+  Nordjylland:
+    file: "1_input/Nordjylland20251029.xlsx"
+    sheet: "Nordjylland"
+    columns:
+      timestamp: "Alarm modtaget"
+      response_time: "ResponsMinutter"
+      priority: "Hastegrad ved oprettelse"
+      month: "Måned"
+    month_type: numeric  # 1-12
+    notes: "Updated 2025-10-29 - New dataset from Nils with ResponsMinutter column"
+
+  Hovedstaden:
+    file: "1_input/Hovedstaden20251027.xlsx"
+    sheet: "RegionHovedstaden"
+    columns:
+      timestamp: "Alarmopkald_modtaget"
+      response_time: "ResponsMinutter"
+      priority: "Forste_respons"
+      month: "Maaned"
+    month_type: danish  # Needs conversion: "Januar" → 1
+    notes: "Requires month name conversion from Danish to numeric"
+
+  Sjælland:
+    file: "1_input/RegionSjælland.xlsx"
+    sheet: "Sjælland"
+    columns:
+      timestamp: "Kald modtaget (tid)"
+      response_time: "Minutter"
+      priority: "Hastegrad ved visitering"
+      month: "Måned"
+    month_type: numeric  # 1-12
+    notes: "100% data coverage"
+
+  Midtjylland:
+    file: "1_input/Midtjylland20251027.xlsx"
+    sheet: "Midtjylland"
+    columns:
+      timestamp: "Tid_HændelseOprettet"
+      response_time: "ResponstidMinutter"
+      priority: "Respons"
+      month: "Måned_HændelseOprettet"
+    month_type: numeric  # 1-12
+    notes: "100% data coverage"
+
+  Syddanmark:
+    file: "1_input/Syddanmark20251025.xlsx"
+    sheet: "Syddanmark"
+    columns:
+      timestamp: "Hændelse oprettet i disponeringssystem"
+      response_time: "Responstid i minutter"
+      priority: "Hastegrad ved oprettelse"
+      month: "Måned"
+    month_type: numeric  # 1-12
+    notes: "58.3% data coverage - response time column has empty strings that need filtering"
+
+# Danish month name to numeric mapping
+danish_months:
+  "Januar": 1
+  "Februar": 2
+  "Marts": 3
+  "April": 4
+  "Maj": 5
+  "Juni": 6
+  "Juli": 7
+  "August": 8
+  "September": 9
+  "Oktober": 10
+  "November": 11
+  "December": 12
+
+# Data quality thresholds
+thresholds:
+  min_sample_size_per_hour: 100
+  min_sample_size_per_month: 1000
+  min_data_coverage_pct: 50.0
+
+# Output settings
+output:
+  file_prefix_format: "{region_name}_"  # e.g. "Nordjylland_05_responstid_per_time.xlsx"
+  include_region_in_metadata: true
