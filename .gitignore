@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Data Files - STORE FILER fra Nils (commit IKKE til GitHub)
+data/
+1_input/*.xlsx
+1_input/*.xls
+1_input/*.csv
+1_input/_archive/
+
+# Output Files i rod (skal flyttes til 3_output/current/)
+/*.xlsx
+/*.csv
+/*.json
+
+# Output Files (genereres ved hver kørsel)
+3_output/current/*.xlsx
+3_output/current/*.csv
+3_output/current/*.json
+3_output/temporal/
+3_output/backup_*/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+.ipynb_checkpoints/
+
+# Keep directory structure
+!1_input/.gitkeep
+!3_output/current/.gitkeep

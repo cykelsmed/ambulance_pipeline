@@ -1,0 +1,62 @@
+# Ambulance Pipeline Configuration
+version: "1.0"
+
+# Input settings
+input:
+  directory: "1_input"
+  auto_detect: true
+  patterns:
+    nordjylland: "Nordjylland*.xlsx"
+    sjælland: "*Sjælland*.xlsx"
+    syddanmark: "Syddanmark*.xlsx"
+    midtjylland: "Midtjylland*.xlsx"
+    hovedstaden: "Hovedstaden*.xlsx"
+
+  # Hvilke ark skal læses?
+  preferred_sheet_names:
+    - "Postnummer"
+    - "Postnumre"
+    - "postnummer"
+
+# Statistical thresholds
+statistics:
+  top_10_min_ture: 50              # Minimum ture for Top 10
+  regional_top_20_min_ture: 30     # Per region, mere fleksibel
+
+  # Color coding for Datawrapper
+  color_green_max: 10.0  # <10 min = grøn
+  color_yellow_max: 15.0 # 10-15 min = gul
+  # >15 min = rød
+
+# Postnummer normalization
+postnummer_mapping:
+  "København K": 1000
+  "København V": 1500
+  "Frederiksberg C": 1800
+
+# Output settings
+output:
+  directory: "3_output/current"
+  archive_directory: "3_output/archive"
+  format: "xlsx"
+  decimal_places: 1
+
+  # Enable/disable specific analyses (MVP: Tier 1 only)
+  enabled_analyses:
+    - "alle_postnumre"
+    - "top_10_værste"
+    - "top_10_bedste"
+    - "regional_sammenligning"
+    - "datawrapper_csv"
+
+# Logging
+logging:
+  level: "INFO"
+  file: "pipeline.log"
+  console: true
+
+# Validation rules
+validation:
+  min_rows_per_region: 10          # Error hvis <10 poster
+  max_responstid: 300              # Warn hvis >300 min (5 timer)
+  min_responstid: 0                # Warn hvis <0 min
