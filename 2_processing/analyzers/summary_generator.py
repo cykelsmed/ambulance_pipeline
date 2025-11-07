@@ -529,7 +529,15 @@ def _write_footer(f, output_dir):
 
     f.write("---\n\n")
     f.write(f"**RAPPORT GENERERET: {datetime.now().strftime('%d. %B %Y kl. %H:%M')}**\n\n")
-    f.write("*Genereret automatisk af Ambulance Pipeline*\n")
+    f.write("*Genereret automatisk af Ambulance Pipeline*\n\n")
+
+    # GitHub repository and attribution
+    f.write("---\n\n")
+    f.write("**Kildekode og dokumentation:** https://github.com/cykelsmed/ambulance_pipeline\n\n")
+    f.write("**Undersøgelsen er lavet af:**  \n")
+    f.write("Kaas og Mulvad Research / Adam Hvidt  \n")
+    f.write("Email: adam@km24  \n")
+    f.write("Telefon: 26366414\n")
 
 
 def generate_consolidated_summary(output_dir):

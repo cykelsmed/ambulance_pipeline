@@ -1,7 +1,7 @@
 # MASTER FINDINGS RAPPORT
 ## Komplet Analyse af Ambulance Responstider i Danmark
 
-**Genereret:** 07. November 2025 kl. 19:53
+**Genereret:** 07. November 2025 kl. 22:38
 **Periode:** 2021-2025 (5 år)
 **Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling
 
@@ -301,6 +301,15 @@ Rigsrevisionens beretning (SR 11/2024) kritiserer, at den tid, der går fra borg
 
 ---
 
-**RAPPORT GENERERET: 07. November 2025 kl. 19:53**
+**RAPPORT GENERERET: 07. November 2025 kl. 22:38**
 
 *Genereret automatisk af Ambulance Pipeline*
+
+---
+
+**Kildekode og dokumentation:** https://github.com/cykelsmed/ambulance_pipeline
+
+**Undersøgelsen er lavet af:**  
+Kaas og Mulvad Research / Adam Hvidt  
+Email: adam@km24  
+Telefon: 26366414
