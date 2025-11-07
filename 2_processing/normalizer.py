@@ -32,11 +32,15 @@ def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns:
         col_lower = str(col).lower()
 
-        # Postnummer
-        if 'row labels' in col_lower:
+        # Already normalized columns - keep as is
+        if col in ['Postnummer', 'Antal_ture', 'Gennemsnit_minutter', 'Max_minutter', 'Region']:
+            column_mapping[col] = col
+
+        # Postnummer variations
+        elif 'row labels' in col_lower:
             column_mapping[col] = 'Postnummer'
 
-        # Antal ture
+        # Antal ture variations
         elif 'count' in col_lower:
             column_mapping[col] = 'Antal_ture'
 

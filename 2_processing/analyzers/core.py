@@ -151,21 +151,16 @@ def analyze_regional_sammenligning(df: pd.DataFrame, config: Dict[str, Any]) -> 
     """
     logger.info("Generating analysis: Regional sammenligning")
 
-    # Aggregate by region
-    regional_stats = df.groupby('Region').agg({
-        'Gennemsnit_minutter': ['mean', 'median'],
-        'Antal_ture': 'sum',
-        'Postnummer': 'count'
-    }).reset_index()
-
-    # Flatten column names
-    regional_stats.columns = [
-        'Region',
-        'Gennemsnit_minutter',
-        'Median_minutter',
-        'Total_ture',
-        'Antal_postnumre'
-    ]
+    # Calculate weighted average per region (NOT mean of means!)
+    # Weighted average = sum(response_time * trips) / sum(trips)
+    regional_stats = df.groupby('Region').apply(
+        lambda x: pd.Series({
+            'Gennemsnit_minutter': (x['Gennemsnit_minutter'] * x['Antal_ture']).sum() / x['Antal_ture'].sum(),
+            'Median_minutter': x['Gennemsnit_minutter'].median(),  # Median of postal code averages
+            'Total_ture': x['Antal_ture'].sum(),
+            'Antal_postnumre': len(x)
+        })
+    ).reset_index()
 
     # Round to 1 decimal
     decimal_places = config['output']['decimal_places']

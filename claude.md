@@ -23,10 +23,10 @@ python3 pipeline.py
 ### Run Individual Analysis Types
 ```bash
 # Temporal analysis only (all 5 regions)
-python3 run_all_regions_temporal.py
+python3 scripts/run_all_regions_temporal.py
 
 # Temporal analysis (single region - Nordjylland)
-python3 run_temporal_analysis.py
+python3 scripts/run_temporal_analysis.py
 ```
 
 ### Organize Output Files (Manual - Only if Needed)
@@ -35,10 +35,10 @@ python3 run_temporal_analysis.py
 # Only use this if you need to re-organize existing files
 
 # Create organized ZIP archive
-python3 organize_output.py
+python3 scripts/organize_output.py
 
 # Keep unzipped files after organizing
-python3 organize_output.py --keep-unzipped
+python3 scripts/organize_output.py --keep-unzipped
 ```
 
 ### Testing & Validation

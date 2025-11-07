@@ -28,7 +28,7 @@ python3 pipeline.py
 #### Single Region (Nordjylland)
 ```bash
 # Kør temporal analyse for kun Nordjylland
-python3 run_temporal_analysis.py
+python3 scripts/run_temporal_analysis.py
 
 # Output (3 filer):
 # ✓ 05_responstid_per_time.xlsx
@@ -41,7 +41,7 @@ python3 run_temporal_analysis.py
 #### ALLE 5 Regioner (NYT!)
 ```bash
 # Kør temporal analyse for ALLE regioner
-python3 run_all_regions_temporal.py
+python3 scripts/run_all_regions_temporal.py
 
 # Output (30 filer - 6 per region):
 # ✓ {Region}_05_responstid_per_time.xlsx
@@ -209,7 +209,13 @@ CSV-fil klar til Datawrapper-kort med farve-kategorisering.
 - Baseret på **180,267 rå kørsler** (kun Nordjylland)
 - Totalt **~2 millioner** rå kørsler på tværs af alle regioner
 - Pipeline genberegning gav **identiske resultater** (0.00 min forskel)
-- Se fuld verificeringsrapport: [VERIFICATION.md](VERIFICATION.md)
+- Se fuld verificeringsrapport: [VERIFICATION.md](docs/archive/VERIFICATION.md)
+
+**⚠️ METODISK BEGRÆNSNING (Rigsrevisionen SR 11/2024):**
+- Officielle responstider måles fra **disponering** (ambulance sendt) til **ankomst**
+- Den tid, borgeren venter fra 112-opkald til disponering, tælles **IKKE** med
+- Den reelle ventetid for borgeren er derfor **længere** end tallene viser
+- Pipeline inkluderer denne kontekst i alle rapporter
 
 **Pipeline håndterer automatisk:**
 - ✅ Forskellige Excel-strukturer per region
@@ -244,34 +250,50 @@ output:
 
 ```
 ambulance_pipeline_pro/
-├── 1_input/                    # Input Excel-filer fra Nils
-│   ├── Nordjylland20251027.xlsx
+├── 1_input/                    # Input Excel-filer fra regioner
+│   ├── Nordjylland20251029.xlsx
 │   ├── RegionSjælland.xlsx
 │   ├── Syddanmark20251025.xlsx
 │   ├── Midtjylland20251027.xlsx
-│   └── Hovedstaden20251027.xlsx
+│   ├── Hovedstaden20251027.xlsx
+│   └── _archive/              # Arkiverede data
 │
 ├── 2_processing/               # Python moduler
 │   ├── config.py              # Configuration loader
 │   ├── loader.py              # Auto-detect og læs Excel
 │   ├── normalizer.py          # Data normalisering
+│   ├── postal_code_names.py  # Postnummer → bynavn mapping
 │   └── analyzers/
-│       ├── core.py            # Alle 5 analyser
-│       └── export.py          # Excel/CSV export
+│       ├── core.py            # Postnummer analyser
+│       ├── export.py          # Excel/CSV export
+│       ├── temporal_analysis.py    # Tidsmæssige mønstre
+│       ├── priority_analysis.py    # A/B/C prioritering
+│       ├── yearly_analysis.py      # Årlig udvikling
+│       └── summary_generator.py    # Master findings rapport
 │
 ├── 3_output/
-│   └── current/               # TV2-klare output filer
-│       ├── 01_alle_postnumre.xlsx
-│       ├── 02_top_10_værste_VALIDERET.xlsx
-│       ├── 03_top_10_bedste.xlsx
-│       ├── 04_regional_sammenligning.xlsx
-│       ├── DATAWRAPPER_alle_postnumre.csv
-│       └── pipeline_run_metadata.json
+│   ├── current/               # TV2-klare output filer
+│   │   ├── MASTER_FINDINGS_RAPPORT.md  # Hovedrapport
+│   │   ├── bilag.zip          # Alle analysefiler (49 filer)
+│   │   └── bilag/             # Udpakkede analysefiler
+│   └── archive/               # Arkiverede outputs
+│
+├── scripts/                   # Utility scripts
+│   ├── run_temporal_analysis.py     # Single region temporal
+│   ├── run_all_regions_temporal.py  # Multi-region temporal
+│   ├── regenerate_tv2_report.py     # Regenerer rapport
+│   └── organize_output.py           # Organiser output
+│
+├── docs/                      # Dokumentation
+│   ├── PROJECT_STATUS.md      # Projektstatus
+│   ├── PROJECT_SUMMARY.md     # Projektoversigt
+│   ├── OPDATERING_GUIDE.md    # Opdateringsvejledning
+│   └── archive/               # Arkiveret dokumentation
 │
 ├── config.yaml                # Pipeline konfiguration
 ├── pipeline.py                # Main entry point
 ├── requirements.txt           # Python dependencies
-├── pipeline.log               # Execution log
+├── CLAUDE.md                  # AI assistant guide
 └── README.md                  # This file
 ```
 
@@ -308,10 +330,10 @@ Nordjylland klarer sig værst med 13.0 min gennemsnit - **18% langsommere** end 
 
 ## Logs og Debugging
 
-Pipeline logger til `pipeline.log`:
+Pipeline logger automatisk til `pipeline.log` (genereres ved hver kørsel):
 
 ```bash
-# Se log
+# Se log efter kørsel
 cat pipeline.log
 
 # Se kun warnings/errors
@@ -335,10 +357,14 @@ grep -E "WARNING|ERROR" pipeline.log
 - Validerer responstider (>0, <300 min)
 - Statistisk validering (≥50 ture for Top 10)
 
-## Support
+## Support og Dokumentation
 
 **Projekt Ejer:** Adam Hvidt (adam@km24.dk)
 
 **Implementation:** Claude Code
 
-Se `AMBULANCE_PIPELINE_PRD.md` for fuld PRD og specifikationer.
+**Dokumentation:**
+- [PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md) - Komplet projektoversigt
+- [OPDATERING_GUIDE.md](docs/OPDATERING_GUIDE.md) - Guide til opdatering med nye data
+- [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) - Detaljeret projektstatus
+- [AMBULANCE_PIPELINE_PRD.md](docs/archive/AMBULANCE_PIPELINE_PRD.md) - Fuld PRD og specifikationer

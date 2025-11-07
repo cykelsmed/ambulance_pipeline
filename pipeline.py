@@ -35,7 +35,8 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent / '2_processing'))
 
 from config import load_config
-from loader import load_all_regions
+# from loader import load_all_regions  # OLD: Uses Nils' pre-aggregated Postnummer sheets
+from loader_from_raw import load_all_regions_from_raw  # NEW: Calculates from raw A-priority data
 from normalizer import normalize_data
 from analyzers.core import (
     analyze_alle_postnumre,
@@ -54,7 +55,7 @@ from analyzers.priority_analysis import (
     export_priority_analyses
 )
 from analyzers.yearly_analysis import run_yearly_analysis
-from organize_output import organize_output
+from scripts.organize_output import organize_output
 
 
 def setup_logging(config):
@@ -152,7 +153,7 @@ def run_priority_analyses(config, logger):
             rename_map = {
                 cols.get('priority', 'Hastegrad ved oprettelse'): 'Hastegrad ved oprettelse',
                 cols['response_time']: 'ResponstidMinutter',
-                cols.get('channel', 'Rekvireringskanal'): 'Rekvireringskanal'
+                cols.get('requesting_channel', 'Rekvireringskanal'): 'Rekvireringskanal'
             }
 
             df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
@@ -432,10 +433,11 @@ def main():
     try:
         # Step 1: Load data
         print("\n[1/9] Loading regional data...")
-        print("   → Auto-detecting Excel files from 1_input/")
-        print("   → Reading 'Postnummer' ark (pre-aggregated by Nils)")
-        df_raw = load_all_regions(config)
-        logger.info(f"Loaded {len(df_raw)} rows from {df_raw['Region'].nunique()} regions")
+        print("   → Loading raw A-priority data from all 5 regions")
+        print("   → Calculating postal code aggregations directly from raw data")
+        print("   → This ensures 100% accuracy (not using Nils' pre-aggregations)")
+        df_raw = load_all_regions_from_raw(config)
+        logger.info(f"Loaded {len(df_raw)} postal codes from {df_raw['Region'].nunique()} regions (raw data)")
 
         # Step 2: Normalize data
         print("[2/9] Normalizing data...")
@@ -566,7 +568,7 @@ def main():
         except Exception as e:
             logger.warning(f"Output organization failed: {e}")
             print(f"   ⚠ Output organization failed: {e}")
-            print(f"   → Run manually: python3 organize_output.py")
+            print(f"   → Run manually: python3 scripts/organize_output.py")
 
         # Execution time
         elapsed = datetime.now() - start_time

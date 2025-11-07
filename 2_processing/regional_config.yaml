@@ -10,6 +10,7 @@ regions:
       response_time: "ResponstidMinutter"
       priority: "Hastegrad ved oprettelse"
       month: "Måned"
+      requesting_channel: "Rekvireringskanal"
     month_type: numeric  # 1-12
     notes: "Baseline region - 100% data coverage"
 
@@ -21,6 +22,7 @@ regions:
       response_time: "ResponsMinutter"
       priority: "Forste_respons"
       month: "Maaned"
+      requesting_channel: "Rekvirent"
     month_type: danish  # Needs conversion: "Januar" → 1
     notes: "Requires month name conversion from Danish to numeric"
 
@@ -32,6 +34,7 @@ regions:
       response_time: "Minutter"
       priority: "Hastegrad ved visitering"
       month: "Måned"
+      requesting_channel: "Rekvireringskanal"
     month_type: numeric  # 1-12
     notes: "100% data coverage"
 
@@ -43,6 +46,7 @@ regions:
       response_time: "ResponstidMinutter"
       priority: "Respons"
       month: "Måned_HændelseOprettet"
+      requesting_channel: "Rekvirent"
     month_type: numeric  # 1-12
     notes: "100% data coverage"
 
@@ -54,6 +58,7 @@ regions:
       response_time: "Responstid i minutter"
       priority: "Hastegrad ved oprettelse"
       month: "Måned"
+      requesting_channel: "Rekvirent"
     month_type: numeric  # 1-12
     notes: "58.3% data coverage - response time column has empty strings that need filtering"
 
