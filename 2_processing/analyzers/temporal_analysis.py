@@ -1,11 +1,8 @@
 """Temporal analysis module for ambulance response times.
 
 This module analyzes time-based patterns in response times:
-- Rush hour analysis (hour-by-hour, 0-23) for A+B priority cases
-- Seasonal analysis (month-by-month, 1-12) for A+B priority cases
-
-Both analyses include A and B priority ambulance calls to provide
-a comprehensive view of response times for urgent cases.
+- Rush hour analysis (hour-by-hour, 0-23)
+- Seasonal analysis (month-by-month, 1-12)
 """
 import pandas as pd
 import numpy as np
@@ -50,30 +47,6 @@ def filter_a_cases(df: pd.DataFrame, hastegrad_col: str = 'Hastegrad ved oprette
     after_count = len(df_filtered)
 
     logger.info(f"Filtered to A-cases: {before_count:,} → {after_count:,} rows ({after_count/before_count*100:.1f}%)")
-
-    return df_filtered
-
-
-def filter_ab_cases(df: pd.DataFrame, hastegrad_col: str = 'Hastegrad ved oprettelse') -> pd.DataFrame:
-    """Filter dataset to A and B priority cases.
-
-    Args:
-        df: Input DataFrame
-        hastegrad_col: Name of priority column
-
-    Returns:
-        Filtered DataFrame with A and B cases
-    """
-    before_count = len(df)
-    df_filtered = df[df[hastegrad_col].isin(['A', 'B'])].copy()
-    after_count = len(df_filtered)
-
-    a_count = (df_filtered[hastegrad_col] == 'A').sum()
-    b_count = (df_filtered[hastegrad_col] == 'B').sum()
-
-    logger.info(f"Filtered to A+B cases: {before_count:,} → {after_count:,} rows ({after_count/before_count*100:.1f}%)")
-    logger.info(f"  A-cases: {a_count:,} ({a_count/after_count*100:.1f}%)")
-    logger.info(f"  B-cases: {b_count:,} ({b_count/after_count*100:.1f}%)")
 
     return df_filtered
 
@@ -232,7 +205,7 @@ def generate_key_findings(stats: pd.DataFrame,
 Datagrundlag:
 - Region: {region_name}
 - Periode: {period}
-- Antal A+B-kørsler: {total_ture:,}
+- Antal A-kørsler: {total_ture:,}
 - Analysedato: {pd.Timestamp.now().strftime('%Y-%m-%d')}
 
 HOVEDFUND:
@@ -295,10 +268,7 @@ def analyze_rush_hour(input_file: str,
                       region_name: str = "Nordjylland",
                       output_dir: str = "3_output/current",
                       config: Dict[str, Any] = None) -> Dict[str, Any]:
-    """Main function to run rush hour analysis for A+B priority cases.
-
-    Analyzes hourly patterns in ambulance response times throughout the day,
-    including both A (highest priority) and B (urgent) cases.
+    """Main function to run rush hour analysis.
 
     Args:
         input_file: Path to input Excel file
@@ -327,8 +297,8 @@ def analyze_rush_hour(input_file: str,
     # Step 1: Load data
     df = load_raw_data(input_file, sheet_name, region_name)
 
-    # Step 2: Filter to A+B cases
-    df_a = filter_ab_cases(df)
+    # Step 2: Filter to A-cases
+    df_a = filter_a_cases(df)
 
     # Step 3: Extract hour
     df_a = extract_hour(df_a)
@@ -534,7 +504,7 @@ def generate_seasonal_key_findings(stats: pd.DataFrame,
 Datagrundlag:
 - Region: {region_name}
 - Periode: {period}
-- Antal A+B-kørsler: {total_ture:,}
+- Antal A-kørsler: {total_ture:,}
 - Analysedato: {pd.Timestamp.now().strftime('%Y-%m-%d')}
 
 HOVEDFUND:
@@ -601,11 +571,7 @@ def analyze_seasonal(input_file: str,
                     region_name: str = "Nordjylland",
                     output_dir: str = "3_output/current",
                     config: Dict[str, Any] = None) -> Dict[str, Any]:
-    """Main function to run seasonal analysis for A+B priority cases.
-
-    Analyzes monthly and seasonal patterns in ambulance response times,
-    including both A (highest priority) and B (urgent) cases to identify
-    winter vs. summer effects.
+    """Main function to run seasonal analysis.
 
     Args:
         input_file: Path to input Excel file
@@ -634,8 +600,8 @@ def analyze_seasonal(input_file: str,
     # Step 1: Load data
     df = load_raw_data(input_file, sheet_name, region_name)
 
-    # Step 2: Filter to A+B cases
-    df_a = filter_ab_cases(df)
+    # Step 2: Filter to A-cases
+    df_a = filter_a_cases(df)
 
     # Step 3: Calculate monthly statistics (month column already exists!)
     stats = calculate_monthly_stats(df_a)

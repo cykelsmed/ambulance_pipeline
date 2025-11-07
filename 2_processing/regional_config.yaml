@@ -7,11 +7,11 @@ regions:
     sheet: "Nordjylland"
     columns:
       timestamp: "Alarm modtaget"
-      response_time: "ResponsMinutter"
+      response_time: "ResponstidMinutter"
       priority: "Hastegrad ved oprettelse"
       month: "Måned"
     month_type: numeric  # 1-12
-    notes: "Updated 2025-10-29 - New dataset from Nils with ResponsMinutter column"
+    notes: "Baseline region - 100% data coverage"
 
   Hovedstaden:
     file: "1_input/Hovedstaden20251027.xlsx"

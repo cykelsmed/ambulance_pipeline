@@ -59,14 +59,10 @@ def run_region_temporal_analysis(region_name, region_config, global_config):
                 df, month_col, global_config['danish_months']
             )
 
-        # Filter for A+B priority cases
-        print(f"Filtering for A+B priority cases...")
-        df_a = df[df[priority_col].isin(['A', 'B'])].copy()
-        a_count = (df_a[priority_col] == 'A').sum()
-        b_count = (df_a[priority_col] == 'B').sum()
-        print(f"  A+B cases: {len(df_a):,} ({100*len(df_a)/len(df):.1f}%)")
-        print(f"    A-cases: {a_count:,} ({100*a_count/len(df_a):.1f}%)")
-        print(f"    B-cases: {b_count:,} ({100*b_count/len(df_a):.1f}%)")
+        # Filter for A-priority cases
+        print(f"Filtering for A-priority cases...")
+        df_a = df[df[priority_col] == 'A'].copy()
+        print(f"  A-cases: {len(df_a):,} ({100*len(df_a)/len(df):.1f}%)")
 
         # Convert response time to numeric (handles Syddanmark's empty strings)
         print(f"Converting response times to numeric...")
@@ -177,7 +173,7 @@ def run_region_temporal_analysis(region_name, region_config, global_config):
         with open(fund_file, 'w', encoding='utf-8') as f:
             f.write(f"TIDSMÆSSIGE ANALYSER - TID-PÅ-DØGNET\n")
             f.write(f"Region: {region_name}\n")
-            f.write(f"A+B-kørsler analyseret: {len(df_a):,}\n\n")
+            f.write(f"A-kørsler analyseret: {len(df_a):,}\n\n")
 
             best_hour = hourly_stats.loc[hourly_stats['Median_minutter'].idxmin()]
             worst_hour = hourly_stats.loc[hourly_stats['Median_minutter'].idxmax()]
@@ -206,7 +202,7 @@ def run_region_temporal_analysis(region_name, region_config, global_config):
         with open(fund_file, 'w', encoding='utf-8') as f:
             f.write(f"TIDSMÆSSIGE ANALYSER - SÆSONVARIATION\n")
             f.write(f"Region: {region_name}\n")
-            f.write(f"A+B-kørsler analyseret: {len(df_a):,}\n\n")
+            f.write(f"A-kørsler analyseret: {len(df_a):,}\n\n")
 
             best_month = monthly_stats.loc[monthly_stats['Median_minutter'].idxmin()]
             worst_month = monthly_stats.loc[monthly_stats['Median_minutter'].idxmax()]
@@ -271,21 +267,6 @@ def main():
 
     print(f"\nCompleted: {successful}/{total} regions")
     print(f"Finished: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-    # Generate consolidated summary
-    if successful == total:
-        print("\n" + "="*80)
-        print("GENERATING CONSOLIDATED SUMMARY")
-        print("="*80)
-        from pathlib import Path
-        from analyzers.summary_generator import generate_consolidated_summary
-
-        output_dir = Path(config['output']['directory']) / 'current'
-        try:
-            summary_path = generate_consolidated_summary(output_dir)
-            print(f"\n✅ Consolidated summary created: {summary_path.name}")
-        except Exception as e:
-            print(f"\n⚠️ Warning: Could not generate consolidated summary: {e}")
 
     return 0 if successful == total else 1
 

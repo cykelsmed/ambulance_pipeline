@@ -45,7 +45,7 @@ from analyzers.core import (
     analyze_datawrapper_csv
 )
 from analyzers.export import export_all_analyses, save_metadata
-from analyzers.summary_generator import generate_consolidated_summary, generate_master_findings_report
+from analyzers.summary_generator import generate_master_findings_report
 from analyzers.priority_analysis import (
     analyze_abc_priority,
     calculate_priority_differences,
@@ -53,6 +53,8 @@ from analyzers.priority_analysis import (
     analyze_hastegrad_changes,
     export_priority_analyses
 )
+from analyzers.yearly_analysis import run_yearly_analysis
+from organize_output import organize_output
 
 
 def setup_logging(config):
@@ -299,16 +301,6 @@ def run_temporal_analyses(config, logger):
         except Exception as e:
             logger.error(f"✗ {region_name} temporal analysis failed: {e}", exc_info=True)
 
-    # Generate consolidated summary if all succeeded
-    if success_count == total_regions:
-        try:
-            logger.info("Generating consolidated temporal summary...")
-            summary_path = generate_consolidated_summary(output_dir)
-            logger.info(f"✓ Consolidated summary: {summary_path.name}")
-        except Exception as e:
-            logger.error(f"Failed to generate consolidated summary: {e}")
-            return False
-
     return success_count == total_regions
 
 
@@ -439,14 +431,14 @@ def main():
 
     try:
         # Step 1: Load data
-        print("\n[1/7] Loading regional data...")
+        print("\n[1/9] Loading regional data...")
         print("   → Auto-detecting Excel files from 1_input/")
         print("   → Reading 'Postnummer' ark (pre-aggregated by Nils)")
         df_raw = load_all_regions(config)
         logger.info(f"Loaded {len(df_raw)} rows from {df_raw['Region'].nunique()} regions")
 
         # Step 2: Normalize data
-        print("[2/7] Normalizing data...")
+        print("[2/9] Normalizing data...")
         print("   → Standardizing column names")
         print("   → Coalescing multiple average/max columns")
         print("   → Validating postnumre (1000-9999)")
@@ -454,7 +446,7 @@ def main():
         logger.info(f"Normalized to {len(df_clean)} rows")
 
         # Step 3: Run analyses
-        print("[3/7] Running postnummer analyses...")
+        print("[3/9] Running postnummer analyses...")
         print("   → Generating 5 Tier 1 analyses")
         analyses = {}
 
@@ -481,7 +473,7 @@ def main():
         logger.info(f"Generated {len(analyses)} analyses")
 
         # Step 4: Export results
-        print("[4/7] Exporting postnummer results...")
+        print("[4/9] Exporting postnummer results...")
         output_files = export_all_analyses(analyses, config)
 
         # Save metadata
@@ -496,7 +488,7 @@ def main():
         save_metadata(output_dir, config, stats)
 
         # Step 5: Run temporal analyses (time-of-day and seasonal)
-        print("\n[5/7] Running temporal analyses...")
+        print("\n[5/9] Running temporal analyses...")
         print("   → Analyzing time-of-day patterns (rush hour)")
         print("   → Analyzing seasonal patterns (winter crisis)")
         print("   → Processing all 5 regions with A+B priority cases")
@@ -511,7 +503,7 @@ def main():
             logger.warning("Temporal analyses completed with errors")
 
         # Step 6: Run priority/system analyses
-        print("\n[6/7] Running system analyses...")
+        print("\n[6/9] Running system analyses...")
         print("   → A vs B vs C prioritering")
         print("   → Hastegradomlægning (hvis data findes)")
         print("   → Rekvireringskanal-analyse")
@@ -525,18 +517,32 @@ def main():
             print("   ⚠ System analyses had errors (check log)")
             logger.warning("System analyses completed with errors")
 
-        # Step 7: Generate master findings report
-        if temporal_success and priority_success:
-            print("\n[7/7] Generating master findings report...")
-            print("   → Combining all analyses (postnummer + temporal + system)")
-            try:
-                master_report = generate_master_findings_report(output_dir)
-                print("   ✓ Master report generated")
-                stats['analyses'].append('master_findings_report')
-                logger.info(f"Generated master findings report: {master_report.name}")
-            except Exception as e:
-                print(f"   ⚠ Master report generation failed: {e}")
-                logger.error(f"Failed to generate master report: {e}", exc_info=True)
+        # Step 7: Run yearly analysis (year-by-region breakdown)
+        print("\n[7/9] Running yearly analysis...")
+        print("   → Analyzing response times per year and region")
+        print("   → Generating landsdækkende årlige gennemsnit")
+
+        try:
+            yearly_files = run_yearly_analysis(output_dir, priority='A')
+            print(f"   ✓ Yearly analysis completed ({len(yearly_files)} files)")
+            stats['analyses'].append('yearly_analysis')
+            logger.info(f"Generated {len(yearly_files)} yearly analysis files")
+        except Exception as e:
+            print(f"   ⚠ Yearly analysis failed: {e}")
+            logger.error(f"Yearly analysis failed: {e}", exc_info=True)
+
+        # Step 8: Generate master findings report
+        print("\n[8/9] Generating master findings report...")
+        print("   → Combining all analyses (postnummer + årlig + temporal + system)")
+
+        try:
+            master_report = generate_master_findings_report(output_dir)
+            print("   ✓ Master rapport genereret")
+            stats['analyses'].append('master_findings_report')
+            logger.info(f"Generated master findings report: {master_report.name}")
+        except Exception as e:
+            print(f"   ⚠ Master rapport fejlede: {e}")
+            logger.error(f"Failed to generate master report: {e}", exc_info=True)
 
         # Print summary
         print_summary(analyses, stats)
@@ -545,10 +551,27 @@ def main():
         print(f"\nOutput files saved to: {output_dir.absolute()}")
         print()
 
+        # Step 9: Organize output files
+        print("\n[9/9] Organizing output files...")
+        print("   → Packing all analysis files into bilag.zip")
+        print("   → Keeping only MASTER_FINDINGS_RAPPORT.md + bilag.zip in /current")
+
+        try:
+            organize_output(output_dir, keep_unzipped=False)
+            print("   ✓ Output files organized")
+            print(f"\n📦 Final output:")
+            print(f"   - MASTER_FINDINGS_RAPPORT.md (main report)")
+            print(f"   - bilag.zip (all {len(list(output_dir.glob('bilag/*')))} analysis files)")
+            logger.info("Output files organized successfully")
+        except Exception as e:
+            logger.warning(f"Output organization failed: {e}")
+            print(f"   ⚠ Output organization failed: {e}")
+            print(f"   → Run manually: python3 organize_output.py")
+
         # Execution time
         elapsed = datetime.now() - start_time
         logger.info(f"Pipeline completed in {elapsed.total_seconds():.1f} seconds")
-        print(f"✓ Pipeline completed successfully in {elapsed.total_seconds():.1f} seconds")
+        print(f"\n✓ Pipeline completed successfully in {elapsed.total_seconds():.1f} seconds")
 
         return 0
 
