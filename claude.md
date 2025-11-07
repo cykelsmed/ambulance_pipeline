@@ -10,14 +10,15 @@ This is an ambulance response time analysis pipeline for Danish TV2, processing 
 
 ### Run Complete Pipeline
 ```bash
-# Runs ALL analyses (postnummer + temporal + priority + yearly + master report)
-# Automatically organizes output into MASTER_FINDINGS_RAPPORT.md + bilag.zip
+# Runs ALL analyses (postnummer + temporal + priority + yearly + master report + HTML/PDF)
+# Automatically organizes output into MASTER_FINDINGS_RAPPORT files + bilag.zip
 python3 pipeline.py
 
 # Final output: 3_output/current/
-#   - MASTER_FINDINGS_RAPPORT.md (main report)
+#   - MASTER_FINDINGS_RAPPORT.md (Markdown version)
+#   - MASTER_FINDINGS_RAPPORT.html (HTML version - print to PDF from browser)
 #   - bilag.zip (all 49 analysis files)
-# Execution: ~11 minutes total (9 steps)
+# Execution: ~11 minutes total (10 steps)
 ```
 
 ### Run Individual Analysis Types
@@ -55,9 +56,9 @@ cat temporal_analysis.log
 
 ## Architecture Overview
 
-### Multi-Phase Pipeline Design (9 Steps)
+### Multi-Phase Pipeline Design (10 Steps)
 
-The pipeline executes 9 sequential steps:
+The pipeline executes 10 sequential steps:
 
 1. **Step 1-2: Data Loading & Normalization**
    - Auto-detects Excel files from all 5 regions
@@ -90,10 +91,16 @@ The pipeline executes 9 sequential steps:
    - Includes postal code, yearly, temporal, and priority sections
    - Markdown format for easy reading
 
-7. **Step 9: Output Organization (NEW!)**
+7. **Step 9: Output Organization**
    - Automatically packs all 48 analysis files into bilag.zip
-   - Keeps only MASTER_FINDINGS_RAPPORT.md + bilag.zip in 3_output/current/
+   - Keeps only MASTER_FINDINGS_RAPPORT files + bilag.zip in 3_output/current/
    - Clean, publication-ready output structure
+
+8. **Step 10: HTML/PDF Generation (NEW!)**
+   - Converts Markdown report to professional HTML using Pandoc
+   - HTML includes table of contents and styled tables
+   - HTML can be printed to PDF from any browser (File → Print → Save as PDF)
+   - Requires: `brew install pandoc` (already included in setup)
 
 ### Configuration-Driven Regional Handling
 

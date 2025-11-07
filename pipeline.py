@@ -46,7 +46,7 @@ from analyzers.core import (
     analyze_datawrapper_csv
 )
 from analyzers.export import export_all_analyses, save_metadata
-from analyzers.summary_generator import generate_master_findings_report
+from analyzers.summary_generator import generate_master_findings_report, generate_master_findings_pdf
 from analyzers.priority_analysis import (
     analyze_abc_priority,
     calculate_priority_differences,
@@ -432,7 +432,7 @@ def main():
 
     try:
         # Step 1: Load data
-        print("\n[1/9] Loading regional data...")
+        print("\n[1/10] Loading regional data...")
         print("   → Loading raw A-priority data from all 5 regions")
         print("   → Calculating postal code aggregations directly from raw data")
         print("   → This ensures 100% accuracy (not using Nils' pre-aggregations)")
@@ -440,7 +440,7 @@ def main():
         logger.info(f"Loaded {len(df_raw)} postal codes from {df_raw['Region'].nunique()} regions (raw data)")
 
         # Step 2: Normalize data
-        print("[2/9] Normalizing data...")
+        print("[2/10] Normalizing data...")
         print("   → Standardizing column names")
         print("   → Coalescing multiple average/max columns")
         print("   → Validating postnumre (1000-9999)")
@@ -448,7 +448,7 @@ def main():
         logger.info(f"Normalized to {len(df_clean)} rows")
 
         # Step 3: Run analyses
-        print("[3/9] Running postnummer analyses...")
+        print("[3/10] Running postnummer analyses...")
         print("   → Generating 5 Tier 1 analyses")
         analyses = {}
 
@@ -475,7 +475,7 @@ def main():
         logger.info(f"Generated {len(analyses)} analyses")
 
         # Step 4: Export results
-        print("[4/9] Exporting postnummer results...")
+        print("[4/10] Exporting postnummer results...")
         output_files = export_all_analyses(analyses, config)
 
         # Save metadata
@@ -490,7 +490,7 @@ def main():
         save_metadata(output_dir, config, stats)
 
         # Step 5: Run temporal analyses (time-of-day and seasonal)
-        print("\n[5/9] Running temporal analyses...")
+        print("\n[5/10] Running temporal analyses...")
         print("   → Analyzing time-of-day patterns (rush hour)")
         print("   → Analyzing seasonal patterns (winter crisis)")
         print("   → Processing all 5 regions with A+B priority cases")
@@ -505,7 +505,7 @@ def main():
             logger.warning("Temporal analyses completed with errors")
 
         # Step 6: Run priority/system analyses
-        print("\n[6/9] Running system analyses...")
+        print("\n[6/10] Running system analyses...")
         print("   → A vs B vs C prioritering")
         print("   → Hastegradomlægning (hvis data findes)")
         print("   → Rekvireringskanal-analyse")
@@ -520,7 +520,7 @@ def main():
             logger.warning("System analyses completed with errors")
 
         # Step 7: Run yearly analysis (year-by-region breakdown)
-        print("\n[7/9] Running yearly analysis...")
+        print("\n[7/10] Running yearly analysis...")
         print("   → Analyzing response times per year and region")
         print("   → Generating landsdækkende årlige gennemsnit")
 
@@ -534,7 +534,7 @@ def main():
             logger.error(f"Yearly analysis failed: {e}", exc_info=True)
 
         # Step 8: Generate master findings report
-        print("\n[8/9] Generating master findings report...")
+        print("\n[8/10] Generating master findings report...")
         print("   → Combining all analyses (postnummer + årlig + temporal + system)")
 
         try:
@@ -554,7 +554,7 @@ def main():
         print()
 
         # Step 9: Organize output files
-        print("\n[9/9] Organizing output files...")
+        print("\n[9/10] Organizing output files...")
         print("   → Packing all analysis files into bilag.zip")
         print("   → Keeping only MASTER_FINDINGS_RAPPORT.md + bilag.zip in /current")
 
@@ -569,6 +569,24 @@ def main():
             logger.warning(f"Output organization failed: {e}")
             print(f"   ⚠ Output organization failed: {e}")
             print(f"   → Run manually: python3 scripts/organize_output.py")
+
+        # Step 10: Generate PDF version
+        print("\n[10/10] Generating PDF version of master report...")
+        print("   → Converting Markdown → HTML → PDF")
+        print("   → Applying professional styling with readable tables")
+
+        try:
+            pdf_file = generate_master_findings_pdf(output_dir)
+            if pdf_file:
+                file_size_mb = pdf_file.stat().st_size / (1024 * 1024)
+                print(f"   ✓ PDF generated: {pdf_file.name} ({file_size_mb:.1f} MB)")
+                stats['analyses'].append('master_findings_pdf')
+            else:
+                print("   ⚠ PDF generation failed (check log)")
+                logger.warning("PDF generation failed")
+        except Exception as e:
+            logger.error(f"PDF generation failed: {e}", exc_info=True)
+            print(f"   ⚠ PDF generation failed: {e}")
 
         # Execution time
         elapsed = datetime.now() - start_time

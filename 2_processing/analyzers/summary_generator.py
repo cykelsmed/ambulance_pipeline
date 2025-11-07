@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 import logging
 import sys
+import subprocess
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -548,3 +549,110 @@ def generate_consolidated_summary(output_dir):
     """
     logger.info("Generating consolidated temporal summary...")
     return generate_master_findings_report(output_dir)
+
+
+def generate_master_findings_pdf(output_dir):
+    """Generate professional HTML version of the master findings report for PDF conversion.
+
+    Converts the Markdown master findings report to a well-formatted HTML file
+    using Pandoc. The HTML can be easily converted to PDF by:
+    1. Opening in a browser and using Print → Save as PDF
+    2. Using pandoc with a LaTeX engine (if installed): pandoc file.html -o file.pdf
+
+    Args:
+        output_dir: Path to output directory containing the markdown report
+
+    Returns:
+        Path to generated HTML file (or PDF if LaTeX is available)
+    """
+    logger.info("Generating PDF/HTML version of master findings report...")
+
+    output_dir = Path(output_dir)
+    md_file = output_dir / "MASTER_FINDINGS_RAPPORT.md"
+    html_file = output_dir / "MASTER_FINDINGS_RAPPORT.html"
+    pdf_file = output_dir / "MASTER_FINDINGS_RAPPORT.pdf"
+    css_file = Path(__file__).parent / "report_styles.css"
+
+    try:
+        # Check if markdown file exists
+        if not md_file.exists():
+            logger.error(f"Markdown report not found: {md_file}")
+            return None
+
+        # Build pandoc command for HTML output with professional styling
+        pandoc_cmd = [
+            "pandoc",
+            str(md_file),
+            "-o", str(html_file),
+            "--standalone",  # Generate complete HTML document
+            "--toc",  # Generate table of contents
+            "--toc-depth=2",  # TOC depth (h1 and h2 only)
+            "--metadata", "title=Ambulance Responstidsanalyse - TV2",
+        ]
+
+        # Add CSS if available
+        if css_file.exists():
+            pandoc_cmd.extend(["-c", str(css_file)])
+
+        # Run pandoc command for HTML
+        logger.debug(f"Running pandoc command: {' '.join(pandoc_cmd)}")
+        result = subprocess.run(
+            pandoc_cmd,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+
+        if result.returncode != 0:
+            logger.error(f"Pandoc command failed with code {result.returncode}")
+            logger.error(f"Pandoc stderr: {result.stderr}")
+            return None
+
+        # Check if HTML was created
+        if not html_file.exists():
+            logger.error("HTML file was not created")
+            return None
+
+        # Get file size for logging
+        file_size_kb = html_file.stat().st_size / 1024
+
+        logger.info(f"✓ HTML report generated: {html_file}")
+        logger.info(f"  File size: {file_size_kb:.1f} KB")
+        logger.info(f"  To convert to PDF: Open in browser → Print → Save as PDF")
+
+        # Try to generate PDF if LaTeX is available (best effort, don't fail if not available)
+        try:
+            pdf_cmd = [
+                "pandoc",
+                str(md_file),
+                "-o", str(pdf_file),
+                "-V", "geometry:margin=2cm",
+                "-V", "fontsize=11pt",
+                "-V", "papersize=a4",
+                "--toc",
+                "--toc-depth=2",
+            ]
+
+            pdf_result = subprocess.run(
+                pdf_cmd,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30
+            )
+
+            if pdf_result.returncode == 0 and pdf_file.exists():
+                pdf_size_mb = pdf_file.stat().st_size / (1024 * 1024)
+                logger.info(f"✓ PDF also generated: {pdf_file} ({pdf_size_mb:.2f} MB)")
+                return pdf_file
+        except Exception:
+            pass  # PDF generation is optional
+
+        return html_file
+
+    except FileNotFoundError:
+        logger.error("Pandoc not found. Please install pandoc: brew install pandoc")
+        return None
+    except Exception as e:
+        logger.error(f"Failed to generate report: {e}", exc_info=True)
+        return None
