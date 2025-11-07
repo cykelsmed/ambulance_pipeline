@@ -552,20 +552,22 @@ def generate_consolidated_summary(output_dir):
 
 
 def generate_master_findings_pdf(output_dir):
-    """Generate professional HTML version of the master findings report for PDF conversion.
+    """Generate professional HTML and PDF versions of the master findings report.
 
-    Converts the Markdown master findings report to a well-formatted HTML file
-    using Pandoc. The HTML can be easily converted to PDF by:
-    1. Opening in a browser and using Print → Save as PDF
-    2. Using pandoc with a LaTeX engine (if installed): pandoc file.html -o file.pdf
+    Converts the Markdown master findings report to:
+    1. HTML file using Pandoc (with TOC and professional styling)
+    2. PDF file using Chrome headless to convert HTML → PDF
+
+    The PDF is generated automatically if Chrome is installed on the system.
+    If Chrome is not found, only HTML is generated.
 
     Args:
         output_dir: Path to output directory containing the markdown report
 
     Returns:
-        Path to generated HTML file (or PDF if LaTeX is available)
+        Path to generated PDF file (or HTML file if PDF generation fails)
     """
-    logger.info("Generating PDF/HTML version of master findings report...")
+    logger.info("Generating HTML and PDF versions of master findings report...")
 
     output_dir = Path(output_dir)
     md_file = output_dir / "MASTER_FINDINGS_RAPPORT.md"
@@ -618,35 +620,57 @@ def generate_master_findings_pdf(output_dir):
 
         logger.info(f"✓ HTML report generated: {html_file}")
         logger.info(f"  File size: {file_size_kb:.1f} KB")
-        logger.info(f"  To convert to PDF: Open in browser → Print → Save as PDF")
 
-        # Try to generate PDF if LaTeX is available (best effort, don't fail if not available)
+        # Try to generate PDF using Chrome headless (best effort, don't fail if not available)
         try:
-            pdf_cmd = [
-                "pandoc",
-                str(md_file),
-                "-o", str(pdf_file),
-                "-V", "geometry:margin=2cm",
-                "-V", "fontsize=11pt",
-                "-V", "papersize=a4",
-                "--toc",
-                "--toc-depth=2",
+            # Check for Chrome installation
+            chrome_paths = [
+                "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                "/Applications/Chromium.app/Contents/MacOS/Chromium",
+                "google-chrome",
+                "chromium",
+                "chrome"
             ]
 
-            pdf_result = subprocess.run(
-                pdf_cmd,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=30
-            )
+            chrome_executable = None
+            for chrome_path in chrome_paths:
+                if Path(chrome_path).exists() or subprocess.run(
+                    ["which", chrome_path],
+                    capture_output=True,
+                    check=False
+                ).returncode == 0:
+                    chrome_executable = chrome_path
+                    break
 
-            if pdf_result.returncode == 0 and pdf_file.exists():
-                pdf_size_mb = pdf_file.stat().st_size / (1024 * 1024)
-                logger.info(f"✓ PDF also generated: {pdf_file} ({pdf_size_mb:.2f} MB)")
-                return pdf_file
-        except Exception:
-            pass  # PDF generation is optional
+            if chrome_executable:
+                # Use Chrome headless to convert HTML to PDF
+                html_file_absolute = html_file.resolve()
+                pdf_cmd = [
+                    chrome_executable,
+                    "--headless",
+                    "--disable-gpu",
+                    f"--print-to-pdf={pdf_file}",
+                    f"file://{html_file_absolute}"
+                ]
+
+                pdf_result = subprocess.run(
+                    pdf_cmd,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=30
+                )
+
+                if pdf_result.returncode == 0 and pdf_file.exists():
+                    pdf_size_kb = pdf_file.stat().st_size / 1024
+                    logger.info(f"✓ PDF also generated: {pdf_file} ({pdf_size_kb:.1f} KB)")
+                    return pdf_file
+                else:
+                    logger.warning(f"Chrome PDF generation failed: {pdf_result.stderr}")
+            else:
+                logger.info("Chrome not found - PDF not generated (HTML available)")
+        except Exception as e:
+            logger.warning(f"PDF generation failed: {e}")
 
         return html_file
 

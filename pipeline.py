@@ -572,21 +572,27 @@ def main():
 
         # Step 10: Generate PDF version
         print("\n[10/10] Generating PDF version of master report...")
-        print("   → Converting Markdown → HTML → PDF")
+        print("   → Converting Markdown → HTML → PDF (via Chrome headless)")
         print("   → Applying professional styling with readable tables")
 
         try:
-            pdf_file = generate_master_findings_pdf(output_dir)
-            if pdf_file:
-                file_size_mb = pdf_file.stat().st_size / (1024 * 1024)
-                print(f"   ✓ PDF generated: {pdf_file.name} ({file_size_mb:.1f} MB)")
-                stats['analyses'].append('master_findings_pdf')
+            result_file = generate_master_findings_pdf(output_dir)
+            if result_file:
+                file_size_kb = result_file.stat().st_size / 1024
+                if result_file.suffix == '.pdf':
+                    print(f"   ✓ PDF generated: {result_file.name} ({file_size_kb:.1f} KB)")
+                    print("   ✓ HTML also available: MASTER_FINDINGS_RAPPORT.html")
+                    stats['analyses'].extend(['master_findings_pdf', 'master_findings_html'])
+                else:
+                    print(f"   ✓ HTML generated: {result_file.name} ({file_size_kb:.1f} KB)")
+                    print("   → PDF not generated (Chrome not found)")
+                    stats['analyses'].append('master_findings_html')
             else:
-                print("   ⚠ PDF generation failed (check log)")
-                logger.warning("PDF generation failed")
+                print("   ⚠ HTML/PDF generation failed (check log)")
+                logger.warning("HTML/PDF generation failed")
         except Exception as e:
-            logger.error(f"PDF generation failed: {e}", exc_info=True)
-            print(f"   ⚠ PDF generation failed: {e}")
+            logger.error(f"HTML/PDF generation failed: {e}", exc_info=True)
+            print(f"   ⚠ HTML/PDF generation failed: {e}")
 
         # Execution time
         elapsed = datetime.now() - start_time

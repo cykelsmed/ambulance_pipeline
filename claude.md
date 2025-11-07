@@ -16,7 +16,8 @@ python3 pipeline.py
 
 # Final output: 3_output/current/
 #   - MASTER_FINDINGS_RAPPORT.md (Markdown version)
-#   - MASTER_FINDINGS_RAPPORT.html (HTML version - print to PDF from browser)
+#   - MASTER_FINDINGS_RAPPORT.html (HTML version with TOC)
+#   - MASTER_FINDINGS_RAPPORT.pdf (PDF version - ready to print/share)
 #   - bilag.zip (all 49 analysis files)
 # Execution: ~11 minutes total (10 steps)
 ```
@@ -98,9 +99,10 @@ The pipeline executes 10 sequential steps:
 
 8. **Step 10: HTML/PDF Generation (NEW!)**
    - Converts Markdown report to professional HTML using Pandoc
-   - HTML includes table of contents and styled tables
-   - HTML can be printed to PDF from any browser (File → Print → Save as PDF)
-   - Requires: `brew install pandoc` (already included in setup)
+   - Automatically converts HTML to PDF using Chrome headless
+   - PDF includes table of contents and professionally styled tables
+   - Requires: `brew install pandoc` + Chrome browser (standard on macOS)
+   - Output: Both .html and .pdf files (~636KB PDF, ~23KB HTML)
 
 ### Configuration-Driven Regional Handling
 
@@ -280,3 +282,4 @@ All analyses use standard library + these three packages only.
 - Total pipeline: ~4 minutes for all phases
 
 Memory footprint: Low (only loads one region at a time for temporal analyses)
+- allways use descriptive variable names
