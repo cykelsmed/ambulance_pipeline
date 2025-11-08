@@ -61,6 +61,7 @@ from analyzers.b_priority_analysis import (
     analyze_b_yearly_trends,
     analyze_b_to_a_escalations
 )
+from analyzers.dispatch_delay_analysis import run_dispatch_delay_analysis
 from scripts.organize_output import organize_output
 
 
@@ -438,7 +439,7 @@ def main():
 
     try:
         # Step 1: Load data
-        print("\n[1/11] Loading regional data...")
+        print("\n[1/12] Loading regional data...")
         print("   → Loading raw A-priority data from all 5 regions")
         print("   → Calculating postal code aggregations directly from raw data")
         print("   → This ensures 100% accuracy (not using Nils' pre-aggregations)")
@@ -446,7 +447,7 @@ def main():
         logger.info(f"Loaded {len(df_raw)} postal codes from {df_raw['Region'].nunique()} regions (raw data)")
 
         # Step 2: Normalize data
-        print("[2/11] Normalizing data...")
+        print("[2/12] Normalizing data...")
         print("   → Standardizing column names")
         print("   → Coalescing multiple average/max columns")
         print("   → Validating postnumre (1000-9999)")
@@ -454,7 +455,7 @@ def main():
         logger.info(f"Normalized to {len(df_clean)} rows")
 
         # Step 3: Run analyses
-        print("[3/11] Running postnummer analyses...")
+        print("[3/12] Running postnummer analyses...")
         print("   → Generating 5 Tier 1 analyses")
         analyses = {}
 
@@ -481,7 +482,7 @@ def main():
         logger.info(f"Generated {len(analyses)} analyses")
 
         # Step 4: Export results
-        print("[4/11] Exporting postnummer results...")
+        print("[4/12] Exporting postnummer results...")
         output_files = export_all_analyses(analyses, config)
 
         # Save metadata
@@ -496,7 +497,7 @@ def main():
         save_metadata(output_dir, config, stats)
 
         # Step 5: Run temporal analyses (time-of-day and seasonal)
-        print("\n[5/11] Running temporal analyses...")
+        print("\n[5/12] Running temporal analyses...")
         print("   → Analyzing time-of-day patterns (rush hour)")
         print("   → Analyzing seasonal patterns (winter crisis)")
         print("   → Processing all 5 regions with A+B priority cases")
@@ -511,7 +512,7 @@ def main():
             logger.warning("Temporal analyses completed with errors")
 
         # Step 6: Run priority/system analyses
-        print("\n[6/11] Running system analyses...")
+        print("\n[6/12] Running system analyses...")
         print("   → A vs B vs C prioritering")
         print("   → Hastegradomlægning (hvis data findes)")
         print("   → Rekvireringskanal-analyse")
@@ -526,7 +527,7 @@ def main():
             logger.warning("System analyses completed with errors")
 
         # Step 7: Run B-priority deep analyses
-        print("\n[7/11] Running B-priority deep analyses...")
+        print("\n[7/12] Running B-priority deep analyses...")
         print("   → Geographic hotspots (postnummer-niveau)")
         print("   → Temporal patterns (time-of-day + seasonal)")
         print("   → Yearly trends (2021-2025)")
@@ -583,8 +584,24 @@ def main():
             logger.error(f"B-priority analyses failed: {e}", exc_info=True)
             print(f"   ⚠ B-priority analyses had errors: {e}")
 
-        # Step 8: Run yearly analysis (year-by-region breakdown)
-        print("\n[8/11] Running yearly analysis...")
+        # Step 8: Run dispatch delay vs travel time analysis
+        print("\n[8/12] Running dispatch delay vs. travel time analysis...")
+        print("   → Analyzing total patient wait time breakdown")
+        print("   → Dispatch delay (112 call → dispatch) vs. travel time (dispatch → arrival)")
+        print("   → Only Nordjylland + Syddanmark (datetime timestamps)")
+
+        try:
+            df_dispatch, summary_text = run_dispatch_delay_analysis(output_dir)
+            print(f"   ✓ Dispatch delay analysis completed: {len(df_dispatch)} priority groups analyzed")
+            print(f"   → Nordjylland + Syddanmark: ~550K A+B cases")
+            stats['analyses'].append('dispatch_delay_analysis')
+            logger.info("Dispatch delay analysis completed successfully")
+        except Exception as e:
+            logger.error(f"Dispatch delay analysis failed: {e}", exc_info=True)
+            print(f"   ⚠ Dispatch delay analysis failed: {e}")
+
+        # Step 9: Run yearly analysis (year-by-region breakdown)
+        print("\n[9/12] Running yearly analysis...")
         print("   → Analyzing response times per year and region")
         print("   → Generating landsdækkende årlige gennemsnit")
 
@@ -598,7 +615,7 @@ def main():
             logger.error(f"Yearly analysis failed: {e}", exc_info=True)
 
         # Step 9: Generate master findings report
-        print("\n[9/11] Generating master findings report...")
+        print("\n[10/12] Generating master findings report...")
         print("   → Combining all analyses (postnummer + årlig + temporal + system + B-priority)")
 
         try:
@@ -618,7 +635,7 @@ def main():
         print()
 
         # Step 10: Organize output files
-        print("\n[10/11] Organizing output files...")
+        print("\n[11/12] Organizing output files...")
         print("   → Packing all analysis files into bilag.zip")
         print("   → Keeping only MASTER_FINDINGS_RAPPORT files + bilag.zip in /current")
 
@@ -635,7 +652,7 @@ def main():
             print(f"   → Run manually: python3 scripts/organize_output.py")
 
         # Step 11: Generate PDF version
-        print("\n[11/11] Generating PDF version of master report...")
+        print("\n[12/12] Generating PDF version of master report...")
         print("   → Converting Markdown → HTML → PDF (via Chrome headless)")
         print("   → Applying professional styling with readable tables")
 
