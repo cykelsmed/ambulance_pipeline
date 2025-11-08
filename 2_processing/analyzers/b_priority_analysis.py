@@ -66,7 +66,7 @@ def analyze_b_geographic(output_dir: str, regional_data_cache: Dict = None) -> D
     output_dir = Path(output_dir)
 
     # Load all regional data (use cache if available)
-    all_data = _load_all_regional_b_priority_data(regional_data_cache=regional_data_cache)
+    all_data = _load_all_regional_b_priority_data(include_year=False, regional_data_cache=regional_data_cache)
 
     if all_data.empty:
         logger.error("No B-priority data loaded!")
@@ -645,7 +645,7 @@ def _load_all_regional_b_priority_data(include_year: bool = False, regional_data
     for region_name, region_config in config['regions'].items():
         try:
             # Use cached data if available
-            if regional_data_cache and region_name in regional_data_cache:
+            if regional_data_cache and region_name in regional_data_cache and regional_data_cache[region_name] is not None:
                 df = regional_data_cache[region_name].copy()
                 logger.info(f"Using cached data for {region_name}")
             else:
