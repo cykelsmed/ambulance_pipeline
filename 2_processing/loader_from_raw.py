@@ -18,6 +18,7 @@ import pandas as pd
 import yaml
 from pathlib import Path
 from typing import Dict, Any
+from postal_code_names import get_postal_code_name
 
 logger = logging.getLogger(__name__)
 
@@ -29,18 +30,19 @@ def load_regional_config():
         return yaml.safe_load(f)
 
 
-def load_all_regions_from_raw(config: Dict[str, Any]) -> pd.DataFrame:
+def load_all_regions_from_raw(config: Dict[str, Any], regional_data_cache: Dict = None) -> pd.DataFrame:
     """Load postal code aggregations calculated from raw data.
 
     This replaces load_all_regions() from loader.py. Instead of reading
     pre-aggregated "Postnummer" sheets, it:
-    1. Loads raw data from each region
+    1. Loads raw data from each region (or uses cache)
     2. Filters to A-priority cases
     3. Groups by postal code
     4. Calculates statistics (mean, max, count)
 
     Args:
         config: Pipeline configuration
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         DataFrame with columns: Postnummer, Antal_ture, Region,
@@ -57,12 +59,17 @@ def load_all_regions_from_raw(config: Dict[str, Any]) -> pd.DataFrame:
         logger.info(f"Processing {region_name}...")
 
         try:
-            # Load raw data
-            file_path = Path(region_config['file'])
-            sheet_name = region_config['sheet']
+            # Use cached data if available
+            if regional_data_cache and region_name in regional_data_cache:
+                df = regional_data_cache[region_name].copy()
+                logger.info(f"  Using cached data for {region_name}")
+            else:
+                # Fallback: Load raw data
+                file_path = Path(region_config['file'])
+                sheet_name = region_config['sheet']
 
-            logger.info(f"  Loading raw data from {file_path.name}...")
-            df = pd.read_excel(file_path, sheet_name=sheet_name)
+                logger.info(f"  Loading raw data from {file_path.name}...")
+                df = pd.read_excel(file_path, sheet_name=sheet_name)
 
             # Get column mappings
             cols = region_config['columns']
@@ -129,6 +136,9 @@ def load_all_regions_from_raw(config: Dict[str, Any]) -> pd.DataFrame:
 
             # Convert postal code to int
             postal_stats['Postnummer'] = postal_stats['Postnummer'].astype(int)
+
+            # Add postal code names
+            postal_stats['Postnummer_Navn'] = postal_stats['Postnummer'].apply(get_postal_code_name)
 
             logger.info(f"  ✓ Calculated statistics for {len(postal_stats)} postal codes")
 

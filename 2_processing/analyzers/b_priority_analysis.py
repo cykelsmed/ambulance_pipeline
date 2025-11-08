@@ -16,6 +16,11 @@ import yaml
 from pathlib import Path
 from typing import Dict, Tuple, Any, Optional
 import logging
+import sys
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from postal_code_names import get_postal_code_name
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +43,7 @@ def extract_hour_from_timestamp(timestamp_series):
         return pd.to_datetime(timestamp_series, errors='coerce').dt.hour
 
 
-def analyze_b_geographic(output_dir: str) -> Dict[str, Any]:
+def analyze_b_geographic(output_dir: str, regional_data_cache: Dict = None) -> Dict[str, Any]:
     """Analyze B-priority response times by postal code.
 
     This analysis identifies geographic hotspots where B-priority responses
@@ -51,6 +56,7 @@ def analyze_b_geographic(output_dir: str) -> Dict[str, Any]:
 
     Args:
         output_dir: Directory to save output files
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         Dictionary with analysis results and statistics
@@ -59,8 +65,8 @@ def analyze_b_geographic(output_dir: str) -> Dict[str, Any]:
 
     output_dir = Path(output_dir)
 
-    # Load all regional data
-    all_data = _load_all_regional_b_priority_data()
+    # Load all regional data (use cache if available)
+    all_data = _load_all_regional_b_priority_data(regional_data_cache=regional_data_cache)
 
     if all_data.empty:
         logger.error("No B-priority data loaded!")
@@ -89,6 +95,9 @@ def analyze_b_geographic(output_dir: str) -> Dict[str, Any]:
                 'Min_minutter', 'Max_minutter']:
         postal_stats[col] = postal_stats[col].round(1)
 
+    # Add postal code names
+    postal_stats['Postnummer_Navn'] = postal_stats['Postnummer'].apply(get_postal_code_name)
+
     # Sort by worst first (median)
     postal_stats_sorted = postal_stats.sort_values('Median_minutter', ascending=False)
 
@@ -105,7 +114,7 @@ def analyze_b_geographic(output_dir: str) -> Dict[str, Any]:
         logger.warning(f"Only {len(validated_postal_codes)} postal codes have ≥{min_trips_threshold} B-trips")
 
     top_10_worst = validated_postal_codes.nlargest(10, 'Median_minutter')
-    top_10_worst = top_10_worst[['Postnummer', 'Median_minutter', 'Antal_ture', 'Region']].copy()
+    top_10_worst = top_10_worst[['Postnummer', 'Postnummer_Navn', 'Median_minutter', 'Antal_ture', 'Region']].copy()
 
     # Save top 10 worst
     top_10_file = output_dir / '15_B_top_10_værste_postnumre.xlsx'
@@ -146,7 +155,7 @@ def analyze_b_geographic(output_dir: str) -> Dict[str, Any]:
     return summary_stats
 
 
-def analyze_b_temporal(output_dir: str) -> Dict[str, Any]:
+def analyze_b_temporal(output_dir: str, regional_data_cache: Dict = None) -> Dict[str, Any]:
     """Analyze B-priority temporal patterns (hour-by-hour and month-by-month).
 
     Investigates whether B-priority responses are more affected by time-of-day
@@ -160,6 +169,7 @@ def analyze_b_temporal(output_dir: str) -> Dict[str, Any]:
 
     Args:
         output_dir: Directory to save output files
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         Dictionary with analysis results and statistics
@@ -179,19 +189,24 @@ def analyze_b_temporal(output_dir: str) -> Dict[str, Any]:
         try:
             logger.info(f"Processing {region_name}...")
 
-            # Load raw data
-            file_path = Path(region_config['file'])
+            # Use cached data if available
+            if regional_data_cache and region_name in regional_data_cache:
+                df = regional_data_cache[region_name].copy()
+                logger.info(f"  Using cached data for {region_name}")
+            else:
+                # Fallback: Load raw data
+                file_path = Path(region_config['file'])
 
-            # Handle Nordjylland filename update
-            if 'Nordjylland20251027' in str(file_path):
-                file_path = Path(str(file_path).replace('20251027', '20251029'))
+                # Handle Nordjylland filename update
+                if 'Nordjylland20251027' in str(file_path):
+                    file_path = Path(str(file_path).replace('20251027', '20251029'))
 
-            if not file_path.exists():
-                logger.warning(f"  File not found: {file_path}")
-                continue
+                if not file_path.exists():
+                    logger.warning(f"  File not found: {file_path}")
+                    continue
 
-            sheet_name = region_config['sheet']
-            df = pd.read_excel(file_path, sheet_name=sheet_name)
+                sheet_name = region_config['sheet']
+                df = pd.read_excel(file_path, sheet_name=sheet_name)
 
             # Get column mappings
             cols = region_config['columns']
@@ -309,7 +324,7 @@ def analyze_b_temporal(output_dir: str) -> Dict[str, Any]:
     }
 
 
-def analyze_b_yearly_trends(output_dir: str) -> Dict[str, Any]:
+def analyze_b_yearly_trends(output_dir: str, regional_data_cache: Dict = None) -> Dict[str, Any]:
     """Analyze B-priority response time trends from 2021-2025.
 
     Investigates whether B-priority service has deteriorated, improved, or
@@ -322,6 +337,7 @@ def analyze_b_yearly_trends(output_dir: str) -> Dict[str, Any]:
 
     Args:
         output_dir: Directory to save output files
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         Dictionary with analysis results and statistics
@@ -330,8 +346,8 @@ def analyze_b_yearly_trends(output_dir: str) -> Dict[str, Any]:
 
     output_dir = Path(output_dir)
 
-    # Load all regional data with year information
-    all_data = _load_all_regional_b_priority_data(include_year=True)
+    # Load all regional data with year information (use cache if available)
+    all_data = _load_all_regional_b_priority_data(include_year=True, regional_data_cache=regional_data_cache)
 
     if all_data.empty:
         logger.error("No B-priority data with year information loaded!")
@@ -434,7 +450,7 @@ def analyze_b_yearly_trends(output_dir: str) -> Dict[str, Any]:
     }
 
 
-def analyze_b_to_a_escalations(output_dir: str) -> Dict[str, Any]:
+def analyze_b_to_a_escalations(output_dir: str, regional_data_cache: Dict = None) -> Dict[str, Any]:
     """Analyze B→A priority escalations (Hovedstaden only).
 
     Investigates cases where initial B-priority assessment was changed to
@@ -447,6 +463,7 @@ def analyze_b_to_a_escalations(output_dir: str) -> Dict[str, Any]:
 
     Args:
         output_dir: Directory to save output files
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         Dictionary with analysis results and statistics
@@ -461,14 +478,21 @@ def analyze_b_to_a_escalations(output_dir: str) -> Dict[str, Any]:
         config = yaml.safe_load(f)
 
     hovedstaden_config = config['regions']['Hovedstaden']
-    file_path = Path(hovedstaden_config['file'])
 
-    if not file_path.exists():
-        logger.error(f"Hovedstaden file not found: {file_path}")
-        return {'status': 'failed', 'reason': 'file_not_found'}
+    # Use cached data if available
+    if regional_data_cache and 'Hovedstaden' in regional_data_cache:
+        df = regional_data_cache['Hovedstaden'].copy()
+        logger.info("Using cached data for Hovedstaden")
+    else:
+        # Fallback: Load raw data
+        file_path = Path(hovedstaden_config['file'])
 
-    # Load raw data
-    df = pd.read_excel(file_path, sheet_name=hovedstaden_config['sheet'])
+        if not file_path.exists():
+            logger.error(f"Hovedstaden file not found: {file_path}")
+            return {'status': 'failed', 'reason': 'file_not_found'}
+
+        # Load raw data
+        df = pd.read_excel(file_path, sheet_name=hovedstaden_config['sheet'])
 
     # Get column names
     response_col = hovedstaden_config['columns']['response_time']
@@ -602,11 +626,12 @@ def analyze_b_to_a_escalations(output_dir: str) -> Dict[str, Any]:
 
 # Helper functions
 
-def _load_all_regional_b_priority_data(include_year: bool = False) -> pd.DataFrame:
+def _load_all_regional_b_priority_data(include_year: bool = False, regional_data_cache: Dict = None) -> pd.DataFrame:
     """Load B-priority data from all regions.
 
     Args:
         include_year: Whether to include year column
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         DataFrame with columns: Region, Postnummer, ResponstidMinutter, (Year)
@@ -619,18 +644,24 @@ def _load_all_regional_b_priority_data(include_year: bool = False) -> pd.DataFra
 
     for region_name, region_config in config['regions'].items():
         try:
-            file_path = Path(region_config['file'])
+            # Use cached data if available
+            if regional_data_cache and region_name in regional_data_cache:
+                df = regional_data_cache[region_name].copy()
+                logger.info(f"Using cached data for {region_name}")
+            else:
+                # Fallback: Load raw data
+                file_path = Path(region_config['file'])
 
-            # Handle Nordjylland filename update
-            if 'Nordjylland20251027' in str(file_path):
-                file_path = Path(str(file_path).replace('20251027', '20251029'))
+                # Handle Nordjylland filename update
+                if 'Nordjylland20251027' in str(file_path):
+                    file_path = Path(str(file_path).replace('20251027', '20251029'))
 
-            if not file_path.exists():
-                logger.warning(f"File not found: {file_path}")
-                continue
+                if not file_path.exists():
+                    logger.warning(f"File not found: {file_path}")
+                    continue
 
-            sheet_name = region_config['sheet']
-            df = pd.read_excel(file_path, sheet_name=sheet_name)
+                sheet_name = region_config['sheet']
+                df = pd.read_excel(file_path, sheet_name=sheet_name)
 
             # Get column mappings
             cols = region_config['columns']

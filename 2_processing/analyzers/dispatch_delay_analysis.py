@@ -41,9 +41,14 @@ REGIONAL_CONFIGS = {
 }
 
 
-def calculate_dispatch_and_travel_times(region_name: str, config: Dict) -> pd.DataFrame:
+def calculate_dispatch_and_travel_times(region_name: str, config: Dict, df: pd.DataFrame = None) -> pd.DataFrame:
     """
     Calculate dispatch delay and travel time for a single region.
+
+    Args:
+        region_name: Name of the region
+        config: Region configuration dictionary
+        df: Pre-loaded DataFrame (optional, if None will load from Excel)
 
     Returns DataFrame with columns:
     - Region
@@ -58,9 +63,13 @@ def calculate_dispatch_and_travel_times(region_name: str, config: Dict) -> pd.Da
     """
     logger.info(f"Analyzing dispatch delay for {region_name}...")
 
-    # Load data
-    df = pd.read_excel(config['file'], sheet_name=config['sheet'])
-    logger.info(f"  Loaded {len(df):,} rows from {region_name}")
+    # Use provided data or load from Excel
+    if df is None:
+        df = pd.read_excel(config['file'], sheet_name=config['sheet'])
+        logger.info(f"  Loaded {len(df):,} rows from {region_name}")
+    else:
+        df = df.copy()
+        logger.info(f"  Using cached data for {region_name} ({len(df):,} rows)")
 
     # Filter to A and B priority
     priority_col = config['priority_col']
@@ -132,9 +141,13 @@ def calculate_dispatch_and_travel_times(region_name: str, config: Dict) -> pd.Da
     return pd.DataFrame(results)
 
 
-def run_dispatch_delay_analysis(output_dir: str = '3_output/current') -> Tuple[pd.DataFrame, str]:
+def run_dispatch_delay_analysis(output_dir: str = '3_output/current', regional_data_cache: Dict = None) -> Tuple[pd.DataFrame, str]:
     """
     Run dispatch delay analysis for all supported regions.
+
+    Args:
+        output_dir: Directory to save output files
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
     - DataFrame with analysis results
@@ -147,7 +160,12 @@ def run_dispatch_delay_analysis(output_dir: str = '3_output/current') -> Tuple[p
 
     for region_name, config in REGIONAL_CONFIGS.items():
         try:
-            df_region = calculate_dispatch_and_travel_times(region_name, config)
+            # Use cached data if available
+            df_data = None
+            if regional_data_cache and region_name in regional_data_cache:
+                df_data = regional_data_cache[region_name]
+            
+            df_region = calculate_dispatch_and_travel_times(region_name, config, df=df_data)
             all_results.append(df_region)
         except Exception as e:
             logger.error(f"Failed to analyze {region_name}: {e}", exc_info=True)

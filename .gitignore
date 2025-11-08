@@ -28,6 +28,14 @@ data/
 3_output/temporal/
 3_output/backup_*/
 
+# Generated reports (keep only .md version in git)
+3_output/current/*.html
+3_output/current/*.pdf
+3_output/current/*.zip
+3_output/current/*_FUND.txt
+3_output/current/20_*.txt
+3_output/current/B_*.txt
+
 # Logs
 *.log
 

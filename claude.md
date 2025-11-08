@@ -80,7 +80,9 @@ The pipeline executes 10 sequential steps:
    - Analyzes A/B/C priority differences (all regions)
    - Studies priority changes (hastegradomlægning)
    - Examines channel analysis (rekvireringskanal)
-   - Outputs 6 files
+   - **B-priority analysis**: Separate geographic and temporal analysis for B-priority cases
+   - **Alarmtid (dispatch delay) analysis**: Calculates 112-call → dispatch → arrival breakdown (Nordjylland + Syddanmark only)
+   - Outputs 8+ files
 
 5. **Step 7: Yearly Analysis**
    - Analyzes year-by-year trends (2021-2025) for all regions
@@ -130,14 +132,20 @@ regions:
 1_input/
   ├── {Region}*.xlsx (5 files)
   │
-  ├─> loader.py (auto-detection)
+  ├─> data_cache.py (performance: load Excel once, share across analyzers)
+  │
+  ├─> loader_from_raw.py (calculates postal aggregations from raw data)
   │
   ├─> normalizer.py (column coalescing, validation)
   │
   ├─> analyzers/
   │   ├─> core.py (Phase 1: postal code analyses)
   │   ├─> temporal_analysis.py (Phase 2: time patterns)
-  │   └─> priority_analysis.py (Phase 3: priority/channel)
+  │   ├─> priority_analysis.py (Phase 3: A/B/C priority analysis)
+  │   ├─> b_priority_analysis.py (B-priority geographic + temporal)
+  │   ├─> dispatch_delay_analysis.py (Alarmtid: 112 call → dispatch → arrival)
+  │   ├─> yearly_analysis.py (Phase 4: year-by-year trends)
+  │   └─> summary_generator.py (Master findings report)
   │
   └─> export.py → 3_output/current/
 ```
@@ -146,9 +154,10 @@ regions:
 
 1. **Config Over Code**: Regional variations handled in YAML, not Python
 2. **Fault Tolerance**: Each region processed independently; failures don't cascade
-3. **Automatic Detection**: `loader.py` finds Excel files by pattern matching
-4. **Column Coalescing**: Handles multiple column name variations per metric
-5. **Modular Phases**: Each phase can run independently without others
+3. **Performance Optimization**: `data_cache.py` loads each region's Excel file once and shares across all analyzers
+4. **Raw Data Accuracy**: `loader_from_raw.py` calculates postal aggregations directly from raw data (not pre-aggregated sheets)
+5. **Column Coalescing**: Handles multiple column name variations per metric
+6. **Modular Phases**: Each phase can run independently without others
 
 ## Regional Data Quirks (IMPORTANT)
 

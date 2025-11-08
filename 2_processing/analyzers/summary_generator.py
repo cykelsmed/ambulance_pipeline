@@ -105,18 +105,22 @@ def generate_master_findings_report(output_dir):
                 f.write("Men **140% forskel** rejser spørgsmål: Bliver ikke-livstruende patienter nedprioriteret for meget? ")
                 f.write("En patient med kraftige smerter (B) venter over 20 minutter i Hovedstaden.\n\n")
 
-                # 5. Stabil udvikling
-                f.write("5. **STABIL UDVIKLING**: Landsdækkende responstider har været meget stabile 2021-2025 ")
-                f.write(f"({df_yearly.iloc[0]['Gennemsnit_minutter']:.1f}-{df_yearly.iloc[-1]['Gennemsnit_minutter']:.1f} min). ")
-                f.write("Problemet er geografisk og tidsmæssig fordeling - IKKE generel forværring. ")
-                f.write("**God vinkel:** Der er ingen 'ambulance-krise' i traditionel forstand. Systemet performer stabilt. ")
-                f.write("Det reelle problem er **strukturel ulighed** - nogle danskere får systematisk dårligere service end andre, ")
-                f.write("baseret på hvor de bor og hvornår de bliver syge.\n\n")
+                # 5. Den skjulte alarmtid
+                f.write("5. **DEN SKJULTE ALARMTID - FØR AMBULANCEN OVERHOVEDET KØRER**: 1 ud af 5 minutter af borgerens ventetid ")
+                f.write("sker **før ambulancen forlader stationen**. **Hvad er alarmtid?** Tiden fra du ringer 112 til ambulancen ")
+                f.write("bliver sendt afsted (triage, vurdering og disponering). Nordjylland + Syddanmark data (549,000 kørsler) ")
+                f.write("viser at **ca. 22% af total ventetid** er alarmtid (~2 min median). Dette er **usynligt** for borgeren, ")
+                f.write("som tror hele ventetiden er ambulancen på vej. ")
+                f.write("**Rigsrevisionens kritik (SR 11/2024):** Denne 'skjulte' tid medregnes IKKE i regionernes servicemål, ")
+                f.write("så den reelle ventetid for borgeren er længere end de officielle tal. ")
+                f.write("**Data-problem:** Regionerne kan måle dette, men vi fandt kun brugbare datetime-data i 2 ud af 5 regioners datasæt. ")
+                f.write("Hovedstaden, Sjælland og Midtjylland har time-only timestamps, så deres alarmtid er umulig at beregne.\n\n")
 
                 f.write("---\n\n")
                 f.write("### 📊 Datagrundlag:\n")
                 f.write("- **875,000+ A-prioritet kørsler** analyseret (livstruende tilfælde)\n")
                 f.write("- **493,000+ A+B-kørsler** i tidsmæssige analyser (fuld belastning)\n")
+                f.write("- **549,000+ kørsler** med alarmtid-analyse (Nordjylland + Syddanmark)\n")
                 f.write("- **1,543,000+ total kørsler** analyseret (inkl. C-prioritet)\n")
                 f.write("- **5 års data** (2021-2025) fra alle 5 danske regioner\n")
                 f.write(f"- **{len(pd.read_excel(data_dir / '01_alle_postnumre.xlsx'))} postnumre** kortlagt\n\n")
@@ -140,7 +144,10 @@ def generate_master_findings_report(output_dir):
             # Part 5: B-Priority deep analyses
             _write_b_priority_section(f, output_dir)
 
-            # Part 6: Data files reference
+            # Part 6: Alarm Time Analysis (NEW!)
+            _write_alarm_time_section(f, output_dir)
+
+            # Part 7: Data files reference
             _write_data_files_section(f, output_dir)
 
             # Footer with metadata
@@ -584,6 +591,89 @@ def _write_b_priority_section(f, output_dir):
         f.write("*B-prioritet dyb-analyse data ikke tilgængelig*\n\n---\n\n")
 
 
+def _write_alarm_time_section(f, output_dir):
+    """Write alarm time (dispatch delay) analysis section."""
+    f.write("## ⏱️ DEL 6: ALARMTID - DEN SKJULTE VENTETID\n\n")
+    f.write("**🎯 Journalistisk vinkel:** \"1 ud af 5 minutter sker før ambulancen overhovedet kører\"\n\n")
+
+    f.write("**Hvad er alarmtid?** Tiden fra borgeren ringer 112 til ambulancen bliver sendt afsted. ")
+    f.write("Dette inkluderer triage (sundhedsfaglig vurdering), klassificering af hastegrad, og disponering ")
+    f.write("(at finde og alarmere den rette ambulance). Mens borgeren venter, tror de fleste at ambulancen ")
+    f.write("allerede er på vej - men i virkeligheden går der værdifuld tid i systemet **før** ambulancen ")
+    f.write("overhovedet forlader stationen.\n\n")
+
+    f.write("Data fra Nordjylland og Syddanmark afslører at **ca. 22% af total ventetid** (~2 minutter median) ")
+    f.write("sker i denne 'skjulte' fase. Dette er usynligt for borgeren, men alligevel afgørende.\n\n")
+
+    try:
+        # Files may be in bilag/ subdirectory or root
+        bilag_dir = output_dir / "bilag"
+        data_dir = bilag_dir if bilag_dir.exists() else output_dir
+
+        dispatch_file = data_dir / "20_dispatch_delay_vs_travel.xlsx"
+        if dispatch_file.exists():
+            df_dispatch = pd.read_excel(dispatch_file)
+
+            f.write("### 6.1 Opdeling af Total Ventetid\n\n")
+            f.write("**Geografisk begrænsning:** Regionerne kan måle alarmtid, men vi fandt kun brugbare datetime-data ")
+            f.write("i 2 ud af 5 regioner (Nordjylland + Syddanmark). Hovedstaden, Sjælland og Midtjylland bruger ")
+            f.write("time-only format, hvilket ikke kan beregne tidsforskel hen over midnat. Derfor kan deres ")
+            f.write("alarmtid ikke analyseres med de tilgængelige data.\n\n")
+
+            f.write("| Region | Prioritet | Analyseret | Total Ventetid (median) | Alarmtid | Rejsetid |\n")
+            f.write("|--------|-----------|------------|-------------------------|----------|----------|\n")
+
+            for _, row in df_dispatch.iterrows():
+                region = row['Region']
+                priority = row['Priority']
+                valid_cases = int(row['Valid_Cases'])
+                total_wait = row['Total_Wait_Median']
+                dispatch_delay = row['Dispatch_Delay_Median']
+                travel_time = row['Travel_Time_Median']
+                dispatch_pct = row['Dispatch_Pct']
+                travel_pct = row['Travel_Pct']
+
+                f.write(f"| {region} | {priority} | {valid_cases:,} | {total_wait:.1f} min | ")
+                f.write(f"{dispatch_delay:.1f} min ({dispatch_pct:.0f}%) | ")
+                f.write(f"{travel_time:.1f} min ({travel_pct:.0f}%) |\n")
+
+            f.write("\n")
+
+            # Key findings
+            avg_dispatch_pct_a = df_dispatch[df_dispatch['Priority'] == 'A']['Dispatch_Pct'].mean()
+            avg_dispatch_pct_b = df_dispatch[df_dispatch['Priority'] == 'B']['Dispatch_Pct'].mean()
+
+            f.write("### 6.2 Vigtigste Fund\n\n")
+            f.write(f"**A-prioritet (livstruende):**\n")
+            f.write(f"- Alarmtid udgør **ca. {avg_dispatch_pct_a:.0f}%** af total ventetid\n")
+            f.write(f"- Median alarmtid: ~2.0-2.2 minutter\n")
+            f.write(f"- Median rejsetid: ~7.0-7.6 minutter\n\n")
+
+            f.write(f"**B-prioritet (ikke-livstruende):**\n")
+            f.write(f"- Alarmtid udgør **ca. {avg_dispatch_pct_b:.0f}%** af total ventetid\n")
+            f.write(f"- Median alarmtid: ~3.0 minutter\n")
+            f.write(f"- Median rejsetid: ~11.0-13.6 minutter\n\n")
+
+            f.write("**Rigsrevisionens kritik (SR 11/2024):** Rigsrevisionen påpeger at regionernes servicemål IKKE ")
+            f.write("medregner denne alarmtid. Den officielle 'responstid' starter først når ambulancen disponeres ")
+            f.write("(sendes afsted), ikke når borgeren ringer 112. Vores data viser at denne 'skjulte' tid udgør ")
+            f.write("**over 1/5 af borgerens reelle ventetid**.\n\n")
+
+            f.write("**Konklusion:** Mens alle diskuterer ambulance-placeringer og køreruter (geografisk problem), ")
+            f.write("er der 2 minutter 'skjult' i systemet som kunne optimeres gennem bedre bemanding af ")
+            f.write("alarmcentraler og effektivisering af triage-processer. Dette er et system-problem, ikke et ")
+            f.write("geografi-problem - og derfor potentielt lettere at løse.\n\n")
+
+        else:
+            f.write("*Alarmtid-data ikke tilgængelig*\n\n")
+
+        f.write("---\n\n")
+
+    except Exception as e:
+        logger.warning(f"Could not load alarm time data: {e}")
+        f.write("*Alarmtid analyse-data ikke tilgængelig*\n\n---\n\n")
+
+
 def _write_data_files_section(f, output_dir):
     """Write data files reference section."""
     f.write("## 📁 DATAFILER TIL VIDERE ANALYSE\n\n")
@@ -613,6 +703,10 @@ def _write_data_files_section(f, output_dir):
     f.write("- `09_rekvireringskanal.xlsx` - Rekvireringskanal\n")
     f.write("- `DATAWRAPPER_prioritering_ABC.csv` - Priority visualization\n\n")
 
+    f.write("*Alarmtid-analyse (Nordjylland + Syddanmark):*\n")
+    f.write("- `20_dispatch_delay_vs_travel.xlsx` - Opdeling: alarmtid vs. rejsetid\n")
+    f.write("- `20_DISPATCH_DELAY_FUND.txt` - Key findings\n\n")
+
     f.write("---\n\n")
 
 
@@ -625,15 +719,9 @@ def _write_footer(f, output_dir):
     f.write("- Total: ~2 millioner individuelle ambulance-kørsler\n")
     f.write("- Analyseret: 875,000+ A-prioritet + 668,000+ B-prioritet\n\n")
 
-    # RIGSREVISIONEN KRITIK: Den skjulte ventetid
-    f.write("### ⚠️ KRITISK BEMÆRKNING: DEN \"SKJULTE\" VENTETID (KILDE: RIGSREVISIONEN)\n\n")
-    f.write("Vores analyse er, ligesom regionernes egne opgørelser, baseret på den **officielle responstid**. ")
-    f.write("Denne tid beregnes fra det øjeblik, AMK-vagtcentralen har disponeret (sendt) ambulancen, til ambulancen ")
-    f.write("er fremme ved patienten.\n\n")
-    f.write("Rigsrevisionens beretning (SR 11/2024) kritiserer, at den tid, der går fra borgeren ringer 112, til ")
-    f.write("opkaldet er vurderet og en ambulance er fundet (den såkaldte \"disponeringstid\"), **IKKE medregnes**.\n\n")
-    f.write("**Konklusion:** Den reelle, samlede ventetid for borgeren (fra \"kald\" til \"ankomst\") er derfor ")
-    f.write("længere end de tal, der præsenteres i denne rapport.\n\n")
+    # NOTE: Reference to alarm time analysis (detailed coverage in DEL 6)
+    f.write("**OBS:** Vores analyse fokuserer primært på den officielle responstid (fra disponering til ankomst). ")
+    f.write("For analyse af den 'skjulte' alarmtid før ambulancen sendes afsted, se **DEL 6: ALARMTID**.\n\n")
 
     f.write("---\n\n")
     f.write("**Hvad vi har gjort med rådata:**\n\n")

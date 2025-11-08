@@ -14,8 +14,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def load_all_regional_raw_data():
+def load_all_regional_raw_data(regional_data_cache=None):
     """Load raw data from all 5 regions with standardized columns.
+
+    Args:
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         DataFrame with columns: Region, Year, ResponstidMinutter, Priority
@@ -31,20 +34,26 @@ def load_all_regional_raw_data():
         try:
             logger.info(f"Loading {region_name}...")
 
-            # Fix file path for Nordjylland (updated filename)
-            file_path = region_config['file']
-            if 'Nordjylland20251027' in file_path:
-                file_path = file_path.replace('20251027', '20251029')
+            # Use cached data if available
+            if regional_data_cache and region_name in regional_data_cache:
+                df = regional_data_cache[region_name].copy()
+                logger.info(f"  Using cached data for {region_name}")
+            else:
+                # Fallback: Load data from Excel
+                # Fix file path for Nordjylland (updated filename)
+                file_path = region_config['file']
+                if 'Nordjylland20251027' in file_path:
+                    file_path = file_path.replace('20251027', '20251029')
 
-            file_path = Path(file_path)
-            if not file_path.exists():
-                logger.warning(f"File not found: {file_path}")
-                continue
+                file_path = Path(file_path)
+                if not file_path.exists():
+                    logger.warning(f"File not found: {file_path}")
+                    continue
 
-            sheet_name = region_config['sheet']
+                sheet_name = region_config['sheet']
 
-            # Load data
-            df = pd.read_excel(file_path, sheet_name=sheet_name)
+                # Load data
+                df = pd.read_excel(file_path, sheet_name=sheet_name)
 
             # Get column mappings
             cols = region_config['columns']
@@ -298,12 +307,13 @@ def export_yearly_analysis(yearly_by_region, yearly_summary, regional_summary,
     return [file1, file2, file3, file4, file5]
 
 
-def run_yearly_analysis(output_dir, priority='A'):
+def run_yearly_analysis(output_dir, priority='A', regional_data_cache=None):
     """Run complete yearly analysis pipeline.
 
     Args:
         output_dir: Path to output directory
         priority: Priority level to analyze ('A', 'B', or 'all')
+        regional_data_cache: Pre-loaded regional data dictionary (optional)
 
     Returns:
         list: Paths to generated files
@@ -312,8 +322,8 @@ def run_yearly_analysis(output_dir, priority='A'):
     logger.info(f"Starting yearly analysis for priority={priority}")
     logger.info("="*80)
 
-    # Load data
-    df = load_all_regional_raw_data()
+    # Load data (use cache if available)
+    df = load_all_regional_raw_data(regional_data_cache=regional_data_cache)
 
     # Analyze
     yearly_by_region, yearly_summary, regional_summary = analyze_yearly_by_region(df, priority)
