@@ -7,7 +7,7 @@ regions:
     sheet: "Nordjylland"
     columns:
       timestamp: "Alarm modtaget"
-      response_time: "ResponstidMinutter"
+      response_time: "ResponsMinutter"
       priority: "Hastegrad ved oprettelse"
       month: "Måned"
       requesting_channel: "Rekvireringskanal"

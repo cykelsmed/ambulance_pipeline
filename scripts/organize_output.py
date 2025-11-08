@@ -184,7 +184,7 @@ def main():
     parser.add_argument(
         '--output-dir',
         type=Path,
-        default=Path(__file__).parent / '3_output' / 'current',
+        default=Path(__file__).parent.parent / '3_output' / 'current',
         help='Path to output directory (default: 3_output/current)'
     )
     parser.add_argument(

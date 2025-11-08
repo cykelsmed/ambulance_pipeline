@@ -283,3 +283,4 @@ All analyses use standard library + these three packages only.
 
 Memory footprint: Low (only loads one region at a time for temporal analyses)
 - allways use descriptive variable names
+- Commit and push (with a meaningfull comment) before any major change.

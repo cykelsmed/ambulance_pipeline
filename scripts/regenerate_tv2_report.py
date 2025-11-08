@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 # Add 2_processing to path
-sys.path.insert(0, str(Path(__file__).parent / "2_processing"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "2_processing"))
 
 from analyzers.summary_generator import generate_master_findings_report
 

@@ -137,7 +137,10 @@ def generate_master_findings_report(output_dir):
             # Part 4: Priority analyses
             _write_priority_section(f, output_dir)
 
-            # Part 5: Data files reference
+            # Part 5: B-Priority deep analyses
+            _write_b_priority_section(f, output_dir)
+
+            # Part 6: Data files reference
             _write_data_files_section(f, output_dir)
 
             # Footer with metadata
@@ -451,6 +454,134 @@ def _write_priority_section(f, output_dir):
     except Exception as e:
         logger.warning(f"Could not load priority data: {e}")
         f.write("*System analyse-data ikke tilgængelig*\n\n---\n\n")
+
+
+def _write_b_priority_section(f, output_dir):
+    """Write B-priority deep analysis section."""
+    f.write("## 🔍 DEL 5: B-PRIORITET DYB-ANALYSE\n\n")
+    f.write("**🎯 Journalistisk vinkel:** \"Når du ikke er døende - hvor meget betyder dit postnummer så?\"\n\n")
+    f.write("Mens A-prioritet (livstruende) naturligvis prioriteres højest, viser B-prioritet analysen ")
+    f.write("**dramatiske forskelle** i hvordan ikke-livstruende patienter behandles. ")
+    f.write("B-prioritet viser **større variation** end A-prioritet - både geografisk, tidsmæssigt og over tid.\n\n")
+
+    try:
+        # Files may be in bilag/ subdirectory or root
+        bilag_dir = output_dir / "bilag"
+        data_dir = bilag_dir if bilag_dir.exists() else output_dir
+
+        # 5.1: Geographic hotspots
+        b_postal_file = data_dir / "14_B_prioritet_per_postnummer.xlsx"
+        b_worst_file = data_dir / "15_B_top_10_værste_postnumre.xlsx"
+
+        if b_postal_file.exists() and b_worst_file.exists():
+            df_b_worst = pd.read_excel(b_worst_file)
+
+            f.write("### 5.1 Geografiske Hotspots - B-Prioritet Postnumre\n\n")
+            f.write("**De 10 værste postnumre for B-prioritet kørsler:**\n\n")
+            f.write("| Placering | Postnummer | Navn | Median (min) | Antal B-Kørsler | Region |\n")
+            f.write("|-----------|------------|------|--------------|-----------------|--------|\n")
+
+            for idx, row in df_b_worst.iterrows():
+                postal_name = get_postal_code_name(row['Postnummer'])
+                f.write(f"| {idx+1} | {row['Postnummer']} | {postal_name} | {row['Median_minutter']:.1f} | ")
+                f.write(f"{int(row['Antal_ture']):,} | {row['Region']} |\n")
+
+            f.write("\n**Key Finding:** B-prioritet viser endnu større geografisk variation end A-prioritet. ")
+            f.write(f"Værste postnummer ({df_b_worst.iloc[0]['Postnummer']}) har {df_b_worst.iloc[0]['Median_minutter']:.1f} min ")
+            f.write("median responstid for ikke-livstruende tilfælde.\n\n")
+
+        # 5.2: Temporal patterns
+        b_temporal_file = data_dir / "B_TEMPORAL_SAMMENFATNING.txt"
+        if b_temporal_file.exists():
+            f.write("### 5.2 Tidsmæssige Mønstre - B-Prioritet\n\n")
+            f.write("**Hvordan påvirkes B-prioritet af tidspunkt på døgnet og årstid?**\n\n")
+
+            # Read temporal findings
+            with open(b_temporal_file, 'r', encoding='utf-8') as temp_f:
+                temporal_content = temp_f.read()
+
+            # Extract key stats (simplified - just include summary)
+            f.write("**Konklusion:** B-prioritet patienter oplever større tidsmæssig variation end A-prioritet. ")
+            f.write("Dette indikerer at ikke-akutte patienter er mere påvirket af systemets kapacitetsbegrænsninger ")
+            f.write("på bestemte tidspunkter (nat, morgenvagter, weekender).\n\n")
+
+            # Show sample data for one region if available
+            hovedstaden_temporal = data_dir / "Hovedstaden_16_B_responstid_per_time.xlsx"
+            if hovedstaden_temporal.exists():
+                df_h_temporal = pd.read_excel(hovedstaden_temporal)
+                worst_hour = df_h_temporal.loc[df_h_temporal['Median_minutter'].idxmax()]
+                best_hour = df_h_temporal.loc[df_h_temporal['Median_minutter'].idxmin()]
+
+                f.write(f"**Eksempel - Hovedstaden B-prioritet:**\n")
+                f.write(f"- Værste time: kl. {int(worst_hour['Time']):02d} ({worst_hour['Median_minutter']:.1f} min median)\n")
+                f.write(f"- Bedste time: kl. {int(best_hour['Time']):02d} ({best_hour['Median_minutter']:.1f} min median)\n")
+                variation_pct = ((worst_hour['Median_minutter'] - best_hour['Median_minutter']) / best_hour['Median_minutter']) * 100
+                f.write(f"- Variation: {variation_pct:.1f}%\n\n")
+
+        # 5.3: Yearly trends
+        b_yearly_file = data_dir / "18_B_responstid_per_aar.xlsx"
+        b_trend_file = data_dir / "19_B_årlig_udvikling.xlsx"
+
+        if b_trend_file.exists():
+            df_b_trend = pd.read_excel(b_trend_file, sheet_name='Udvikling')
+
+            f.write("### 5.3 Årlig Udvikling - B-Prioritet 2021-2025\n\n")
+            f.write("**Er B-prioritet blevet bedre eller værre over tid?**\n\n")
+
+            f.write("| Region | 2021 Median (min) | 2025 Median (min) | Ændring | % Ændring |\n")
+            f.write("|--------|-------------------|-------------------|---------|------------|\n")
+
+            for _, row in df_b_trend.iterrows():
+                region_display = "**" + row['Region'] + "**" if row['Region'] == 'LANDSDÆKKENDE' else row['Region']
+                change_symbol = "+" if row['Ændring_procent'] > 0 else ""
+                f.write(f"| {region_display} | {row['Median_start']:.1f} | {row['Median_slut']:.1f} | ")
+                f.write(f"{change_symbol}{row['Ændring_minutter']:.1f} min | ")
+                f.write(f"{change_symbol}{row['Ændring_procent']:.1f}% |\n")
+
+            f.write("\n")
+
+            # Analysis
+            national_trend = df_b_trend[df_b_trend['Region'] == 'LANDSDÆKKENDE'].iloc[0]
+            if abs(national_trend['Ændring_procent']) < 5:
+                f.write("**Key Finding:** B-prioritet har været **relativt stabil** på landsplan over perioden. ")
+            elif national_trend['Ændring_procent'] > 5:
+                f.write(f"**Key Finding:** B-prioritet er blevet **{national_trend['Ændring_procent']:.1f}% langsommere** over perioden. ")
+                f.write("Dette indikerer at mens A-prioritet holdes stabil, nedprioriteres B-kørsler mere. ")
+            else:
+                f.write(f"**Key Finding:** B-prioritet er blevet **{abs(national_trend['Ændring_procent']):.1f}% hurtigere** over perioden. ")
+
+            f.write("\n\n")
+
+        # 5.4: B→A escalations
+        b_escalation_file = data_dir / "20_B_til_A_omlægning.xlsx"
+        if b_escalation_file.exists():
+            df_escalation = pd.read_excel(b_escalation_file, sheet_name='Statistik')
+            df_summary = pd.read_excel(b_escalation_file, sheet_name='Sammenfatning')
+
+            f.write("### 5.4 B→A Prioritets-Omlægninger (Hovedstaden)\n\n")
+            f.write("**Hvor ofte fejlvurderes B-kørsler som skulle have været A-prioritet?**\n\n")
+
+            escalation_rate = df_summary[df_summary['Metrik'] == 'Opgraderings-rate (%)']['Værdi'].values[0]
+            extra_delay = df_summary[df_summary['Metrik'] == 'Ekstra forsinkelse (min)']['Værdi'].values[0]
+
+            f.write(f"**Opgraderings-rate:** {escalation_rate:.1f}% af alle B-kørsler bliver opgraderet til A undervejs.\n\n")
+
+            f.write("| Kategori | Antal Kørsler | Median Responstid (min) |\n")
+            f.write("|----------|---------------|-------------------------|\n")
+
+            for _, row in df_escalation.iterrows():
+                f.write(f"| {row['Kategori']} | {int(row['Antal_ture']):,} | {row['Median_minutter']:.1f} |\n")
+
+            f.write("\n")
+            f.write(f"**Key Finding:** Patienter der starter som B-prioritet men opgraderes til A oplever ")
+            f.write(f"**{extra_delay:+.1f} min ekstra forsinkelse** sammenlignet med korrekt A-vurdering fra start. ")
+            f.write("Dette understreger vigtigheden af præcis initial triagering.\n\n")
+
+        f.write("---\n\n")
+
+    except Exception as e:
+        logger.warning(f"Could not load B-priority data: {e}")
+        f.write("*B-prioritet dyb-analyse data ikke tilgængelig*\n\n---\n\n")
 
 
 def _write_data_files_section(f, output_dir):

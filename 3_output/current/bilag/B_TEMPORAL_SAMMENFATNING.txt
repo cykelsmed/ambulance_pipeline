@@ -1,0 +1,26 @@
+B-PRIORITET: TIDSMÆSSIGE MØNSTRE
+============================================================
+
+KONSOLIDERET ANALYSE AF TIME-PÅ-DØGNET OG SÆSONMÆSSIGE MØNSTRE
+
+
+Nordjylland:
+  Total B-kørsler: 96,001
+  Døgn-variation: 41.0%
+  Værste time: kl. 06
+  Bedste time: kl. 20
+  Sæson-variation: 7.6%
+
+Syddanmark:
+  Total B-kørsler: 160,408
+  Døgn-variation: 28.3%
+  Værste time: kl. 11
+  Bedste time: kl. 02
+  Sæson-variation: 5.2%
+
+============================================================
+
+KONKLUSION:
+B-prioritet viser større tidsmæssig variation end A-prioritet,
+hvilket indikerer at ikke-akutte patienter er mere påvirket af
+systemets kapacitets-begrænsninger på bestemte tidspunkter.

@@ -55,6 +55,12 @@ from analyzers.priority_analysis import (
     export_priority_analyses
 )
 from analyzers.yearly_analysis import run_yearly_analysis
+from analyzers.b_priority_analysis import (
+    analyze_b_geographic,
+    analyze_b_temporal,
+    analyze_b_yearly_trends,
+    analyze_b_to_a_escalations
+)
 from scripts.organize_output import organize_output
 
 
@@ -432,7 +438,7 @@ def main():
 
     try:
         # Step 1: Load data
-        print("\n[1/10] Loading regional data...")
+        print("\n[1/11] Loading regional data...")
         print("   → Loading raw A-priority data from all 5 regions")
         print("   → Calculating postal code aggregations directly from raw data")
         print("   → This ensures 100% accuracy (not using Nils' pre-aggregations)")
@@ -440,7 +446,7 @@ def main():
         logger.info(f"Loaded {len(df_raw)} postal codes from {df_raw['Region'].nunique()} regions (raw data)")
 
         # Step 2: Normalize data
-        print("[2/10] Normalizing data...")
+        print("[2/11] Normalizing data...")
         print("   → Standardizing column names")
         print("   → Coalescing multiple average/max columns")
         print("   → Validating postnumre (1000-9999)")
@@ -448,7 +454,7 @@ def main():
         logger.info(f"Normalized to {len(df_clean)} rows")
 
         # Step 3: Run analyses
-        print("[3/10] Running postnummer analyses...")
+        print("[3/11] Running postnummer analyses...")
         print("   → Generating 5 Tier 1 analyses")
         analyses = {}
 
@@ -475,7 +481,7 @@ def main():
         logger.info(f"Generated {len(analyses)} analyses")
 
         # Step 4: Export results
-        print("[4/10] Exporting postnummer results...")
+        print("[4/11] Exporting postnummer results...")
         output_files = export_all_analyses(analyses, config)
 
         # Save metadata
@@ -490,7 +496,7 @@ def main():
         save_metadata(output_dir, config, stats)
 
         # Step 5: Run temporal analyses (time-of-day and seasonal)
-        print("\n[5/10] Running temporal analyses...")
+        print("\n[5/11] Running temporal analyses...")
         print("   → Analyzing time-of-day patterns (rush hour)")
         print("   → Analyzing seasonal patterns (winter crisis)")
         print("   → Processing all 5 regions with A+B priority cases")
@@ -505,7 +511,7 @@ def main():
             logger.warning("Temporal analyses completed with errors")
 
         # Step 6: Run priority/system analyses
-        print("\n[6/10] Running system analyses...")
+        print("\n[6/11] Running system analyses...")
         print("   → A vs B vs C prioritering")
         print("   → Hastegradomlægning (hvis data findes)")
         print("   → Rekvireringskanal-analyse")
@@ -519,8 +525,66 @@ def main():
             print("   ⚠ System analyses had errors (check log)")
             logger.warning("System analyses completed with errors")
 
-        # Step 7: Run yearly analysis (year-by-region breakdown)
-        print("\n[7/10] Running yearly analysis...")
+        # Step 7: Run B-priority deep analyses
+        print("\n[7/11] Running B-priority deep analyses...")
+        print("   → Geographic hotspots (postnummer-niveau)")
+        print("   → Temporal patterns (time-of-day + seasonal)")
+        print("   → Yearly trends (2021-2025)")
+        print("   → B→A priority escalations (Hovedstaden)")
+
+        b_priority_results = {}
+
+        try:
+            # Analysis 1: Geographic hotspots
+            geo_result = analyze_b_geographic(output_dir)
+            if geo_result.get('status') == 'success':
+                print(f"   ✓ Geographic: {geo_result['total_postal_codes']} postal codes analyzed")
+                print(f"      Worst: {geo_result['worst_postal_code']['postnummer']} ({geo_result['worst_postal_code']['median_minutes']} min)")
+                b_priority_results['geographic'] = geo_result
+                stats['analyses'].append('b_priority_geographic')
+            else:
+                print("   ⚠ Geographic analysis failed")
+
+            # Analysis 2: Temporal patterns
+            temporal_result = analyze_b_temporal(output_dir)
+            if temporal_result.get('status') == 'success':
+                print(f"   ✓ Temporal: {temporal_result['regions_processed']} regions analyzed")
+                b_priority_results['temporal'] = temporal_result
+                stats['analyses'].append('b_priority_temporal')
+            else:
+                print("   ⚠ Temporal analysis failed")
+
+            # Analysis 3: Yearly trends
+            yearly_result = analyze_b_yearly_trends(output_dir)
+            if yearly_result.get('status') == 'success':
+                years = yearly_result['years_analyzed']
+                trend = yearly_result.get('national_trend_percent')
+                print(f"   ✓ Yearly trends: {years[0]}-{years[-1]} ({trend:+.1f}% change)")
+                b_priority_results['yearly'] = yearly_result
+                stats['analyses'].append('b_priority_yearly')
+            else:
+                print("   ⚠ Yearly trend analysis failed")
+
+            # Analysis 4: B→A escalations (Hovedstaden only)
+            escalation_result = analyze_b_to_a_escalations(output_dir)
+            if escalation_result.get('status') == 'success':
+                rate = escalation_result['escalation_rate']
+                print(f"   ✓ B→A escalations: {rate}% upgrade rate (Hovedstaden)")
+                b_priority_results['escalations'] = escalation_result
+                stats['analyses'].append('b_priority_escalations')
+            elif escalation_result.get('status') == 'no_escalations':
+                print("   → No B→A escalations found")
+            else:
+                print("   ⚠ Escalation analysis failed")
+
+            logger.info(f"B-priority analyses completed: {len(b_priority_results)} successful")
+
+        except Exception as e:
+            logger.error(f"B-priority analyses failed: {e}", exc_info=True)
+            print(f"   ⚠ B-priority analyses had errors: {e}")
+
+        # Step 8: Run yearly analysis (year-by-region breakdown)
+        print("\n[8/11] Running yearly analysis...")
         print("   → Analyzing response times per year and region")
         print("   → Generating landsdækkende årlige gennemsnit")
 
@@ -533,9 +597,9 @@ def main():
             print(f"   ⚠ Yearly analysis failed: {e}")
             logger.error(f"Yearly analysis failed: {e}", exc_info=True)
 
-        # Step 8: Generate master findings report
-        print("\n[8/10] Generating master findings report...")
-        print("   → Combining all analyses (postnummer + årlig + temporal + system)")
+        # Step 9: Generate master findings report
+        print("\n[9/11] Generating master findings report...")
+        print("   → Combining all analyses (postnummer + årlig + temporal + system + B-priority)")
 
         try:
             master_report = generate_master_findings_report(output_dir)
@@ -553,25 +617,25 @@ def main():
         print(f"\nOutput files saved to: {output_dir.absolute()}")
         print()
 
-        # Step 9: Organize output files
-        print("\n[9/10] Organizing output files...")
+        # Step 10: Organize output files
+        print("\n[10/11] Organizing output files...")
         print("   → Packing all analysis files into bilag.zip")
-        print("   → Keeping only MASTER_FINDINGS_RAPPORT.md + bilag.zip in /current")
+        print("   → Keeping only MASTER_FINDINGS_RAPPORT files + bilag.zip in /current")
 
         try:
             organize_output(output_dir, keep_unzipped=False)
             print("   ✓ Output files organized")
             print(f"\n📦 Final output:")
-            print(f"   - MASTER_FINDINGS_RAPPORT.md (main report)")
-            print(f"   - bilag.zip (all {len(list(output_dir.glob('bilag/*')))} analysis files)")
+            print(f"   - MASTER_FINDINGS_RAPPORT.md/.html/.pdf (reports)")
+            print(f"   - bilag.zip (all analysis files)")
             logger.info("Output files organized successfully")
         except Exception as e:
             logger.warning(f"Output organization failed: {e}")
             print(f"   ⚠ Output organization failed: {e}")
             print(f"   → Run manually: python3 scripts/organize_output.py")
 
-        # Step 10: Generate PDF version
-        print("\n[10/10] Generating PDF version of master report...")
+        # Step 11: Generate PDF version
+        print("\n[11/11] Generating PDF version of master report...")
         print("   → Converting Markdown → HTML → PDF (via Chrome headless)")
         print("   → Applying professional styling with readable tables")
 
