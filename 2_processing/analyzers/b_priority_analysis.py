@@ -667,6 +667,17 @@ def _load_all_regional_b_priority_data(include_year: bool = False) -> pd.DataFra
             })
             df_b['Region'] = region_name
 
+            # Validate and clean postal codes (Danish postal codes are 1000-9999)
+            initial_count = len(df_b)
+            df_b['Postnummer'] = pd.to_numeric(df_b['Postnummer'], errors='coerce')
+            df_b = df_b[df_b['Postnummer'].notna()].copy()
+            df_b = df_b[df_b['Postnummer'] >= 1000].copy()
+            df_b = df_b[df_b['Postnummer'] <= 9999].copy()
+            df_b['Postnummer'] = df_b['Postnummer'].astype(int)
+
+            if len(df_b) < initial_count:
+                logger.info(f"  Filtered {initial_count - len(df_b)} invalid postal codes from {region_name}")
+
             # Add year if requested
             if include_year:
                 year_col = None
