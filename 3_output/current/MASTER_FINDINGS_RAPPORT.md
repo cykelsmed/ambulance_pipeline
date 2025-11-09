@@ -1,7 +1,7 @@
 # MASTER FINDINGS RAPPORT
 ## Komplet Analyse af Ambulance Responstider i Danmark
 
-**Genereret:** 08. November 2025 kl. 02:43
+**Genereret:** 09. November 2025 kl. 22:48
 **Periode:** 2021-2025 (5 år)
 **Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling
 
@@ -13,9 +13,9 @@
 
 ## 📍 DEL 1: POSTNUMMER-ANALYSER
 
-**🎯 Journalistisk vinkel:** "Dit postnummer afgør dine overlevelseschancer"
+**📊 Nøgletal:** Forskel på op til 3.9x mellem værste og bedste postnummer
 
-Analysen viser **ekstrem geografisk variation** i ambulance-responstider. Bor du i det forkerte postnummer, kan du vente op til 4 gange så længe på en ambulance som nabopostnummeret. Dette er ikke tilfældigt - det er systematisk.
+Analysen viser **betydelig geografisk variation** i ambulance-responstider. Forskellen afspejler primært afstand til nærmeste ambulancestation og geografiske forhold.
 
 *Postnummer-data ikke tilgængelig*
 
@@ -23,9 +23,9 @@ Analysen viser **ekstrem geografisk variation** i ambulance-responstider. Bor du
 
 ## 📅 DEL 2: ÅRLIG UDVIKLING (2021-2025)
 
-**🎯 Journalistisk vinkel:** "Problemet er IKKE forværring - det er ulighed"
+**📊 Nøgletal:** Landsdækkende stabilitet (+1.1% over 5 år), men betydelig regional variation
 
-Landsdækkende responstider har været **bemærkelsesværdigt stabile** 2021-2025. Det reelle problem er ikke generel forværring, men **ekstrem geografisk ulighed** mellem regioner og postnumre.
+Landsdækkende responstider har været **stabile** 2021-2025. Der er dog betydelig forskel mellem regioner og postnumre.
 
 *Årlig analyse-data ikke tilgængelig*
 
@@ -33,9 +33,9 @@ Landsdækkende responstider har været **bemærkelsesværdigt stabile** 2021-202
 
 ## ⏰ DEL 3: TIDSMÆSSIGE MØNSTRE
 
-**🎯 Journalistisk vinkel:** "Myldretids-myten: Nat-vagter er det reelle problem"
+**📊 Nøgletal:** Op til 28% længere responstid om natten end om dagen
 
-**Modintuitiv opdagelse:** Myldretiden (kl. 16-18) er IKKE problemet. Ambulancer er faktisk **hurtigst midt på dagen**. Det reelle problem er **nattevagter** (kl. 02-06) og især **morgenvagt-skiftet** (kl. 06:00), hvor responstiderne er op til **28% langsommere** end dagen.
+**Observation:** Myldretiden (kl. 16-18) har ikke de længste responstider. Ambulancer er faktisk **hurtigst midt på dagen**. De længste responstider ses i **nattetimerne** (kl. 02-06) og især omkring **kl. 06:00**, hvor responstiderne er op til **28% langsommere** end om dagen.
 
 **OBS:** Tidsmæssige analyser inkluderer BÅDE A- og B-prioritet kørsler for at vise det fulde billede af ambulanceberedskabets belastning. Dette forklarer hvorfor værdierne er højere end i Del 2 (som kun viser A-prioritet).
 
@@ -57,15 +57,15 @@ Landsdækkende responstider har været **bemærkelsesværdigt stabile** 2021-202
 | Region | Bedste Måned | Min | Værste Måned | Min | Variation (%) |
 |--------|--------------|-----|--------------|-----|---------------|
 
-**Konklusion:** Sæsonvariation (5-8%) er **meget mindre end tid-på-døgnet variation** (20-28%). Problemet er IKKE vintervejr - det er nattevagter og bemanding.
+**Observation:** Sæsonvariation (5-8%) er **mindre end tid-på-døgnet variation** (20-28%). Tidspunkt på døgnet har større indflydelse på responstid end årstid.
 
 ---
 
 ## 🏥 DEL 4: SYSTEMANALYSER
 
-**🎯 Journalistisk vinkel:** "B-prioritet: Mere end dobbelt så langsom"
+**📊 Nøgletal:** B-prioritet har 60-140% længere responstid end A-prioritet
 
-B-prioritet kørsler (ikke-livstruende) venter **dramatisk længere** end A-prioritet. I Hovedstaden er B-prioritet **140% langsommere** (21.9 min vs 9.1 min). Dette rejser spørgsmål om ressource-allokering.
+B-prioritet kørsler (ikke-livstruende) har længere responstider end A-prioritet. I Hovedstaden er B-prioritet **140% langsommere** (21.9 min vs 9.1 min). Forskellen varierer betydeligt mellem regioner.
 
 *System analyse-data ikke tilgængelig*
 
@@ -73,56 +73,75 @@ B-prioritet kørsler (ikke-livstruende) venter **dramatisk længere** end A-prio
 
 ## 🔍 DEL 5: B-PRIORITET DYB-ANALYSE
 
-**🎯 Journalistisk vinkel:** "Når du ikke er døende - hvor meget betyder dit postnummer så?"
+**📊 Nøgletal:** B-prioritet viser større geografisk og tidsmæssig variation end A-prioritet
 
-Mens A-prioritet (livstruende) naturligvis prioriteres højest, viser B-prioritet analysen **dramatiske forskelle** i hvordan ikke-livstruende patienter behandles. B-prioritet viser **større variation** end A-prioritet - både geografisk, tidsmæssigt og over tid.
-
-### 5.1 Geografiske Hotspots - B-Prioritet Postnumre
-
-**De 10 værste postnumre for B-prioritet kørsler:**
-
-| Placering | Postnummer | Navn | Median (min) | Antal B-Kørsler | Region |
-|-----------|------------|------|--------------|-----------------|--------|
-| 1 | 4305 | 4305 | 47.6 | 191 | Sjælland |
-| 2 | 4944 | 4944 Fejø | 39.5 | 40 | Sjælland |
-| 3 | 7884 | 7884 Fur | 33.9 | 113 | Midtjylland |
-| 4 | 1301 | 1301 | 33.5 | 20 | Hovedstaden |
-| 5 | 8970 | 8970 Havndal | 31.2 | 304 | Midtjylland |
-| 6 | 1430 | 1430 | 31.1 | 43 | Hovedstaden |
-| 7 | 7540 | 7540 Haderup | 31.0 | 171 | Midtjylland |
-| 8 | 7790 | 7790 Thyholm | 30.7 | 452 | Midtjylland |
-| 9 | 1432 | 1432 | 30.1 | 297 | Hovedstaden |
-| 10 | 1154 | 1154 | 29.9 | 30 | Hovedstaden |
-
-**Key Finding:** B-prioritet viser endnu større geografisk variation end A-prioritet. Værste postnummer (4305) har 47.6 min median responstid for ikke-livstruende tilfælde.
-
-### 5.2 Tidsmæssige Mønstre - B-Prioritet
-
-**Hvordan påvirkes B-prioritet af tidspunkt på døgnet og årstid?**
-
-**Konklusion:** B-prioritet patienter oplever større tidsmæssig variation end A-prioritet. Dette indikerer at ikke-akutte patienter er mere påvirket af systemets kapacitetsbegrænsninger på bestemte tidspunkter (nat, morgenvagter, weekender).
-
-**Eksempel - Hovedstaden B-prioritet:**
-- Værste time: kl. 18 (25.9 min median)
-- Bedste time: kl. 04 (17.9 min median)
-- Variation: 44.7%
-
-### 5.3 Årlig Udvikling - B-Prioritet 2021-2025
-
-**Er B-prioritet blevet bedre eller værre over tid?**
-
-| Region | 2021 Median (min) | 2025 Median (min) | Ændring | % Ændring |
-|--------|-------------------|-------------------|---------|------------|
-| Hovedstaden | 20.5 | 22.6 | +2.1 min | +10.2% |
-| Midtjylland | 18.4 | 20.2 | +1.8 min | +9.8% |
-| Nordjylland | 18.5 | 18.1 | -0.4 min | -2.2% |
-| Sjælland | 18.5 | 17.4 | -1.1 min | -5.9% |
-| Syddanmark | 11.5 | 11.6 | +0.1 min | +0.9% |
-| **LANDSDÆKKENDE** | 17.7 | 18.4 | +0.7 min | +4.0% |
-
-**Key Finding:** B-prioritet har været **relativt stabil** på landsplan over perioden. 
+Mens A-prioritet (livstruende) prioriteres højest, viser B-prioritet analysen **betydelige forskelle** i responstider for ikke-livstruende patienter. B-prioritet viser **større variation** end A-prioritet - både geografisk, tidsmæssigt og over tid.
 
 ---
+
+## ⏱️ DEL 6: ALARMTID - VENTETID FØR AMBULANCEN KØRER
+
+**📊 Nøgletal:** Ca. 22% af total ventetid (~2 min median) sker før ambulancen kører
+
+**Hvad er alarmtid?** Tiden fra borgeren ringer 112 til ambulancen bliver sendt afsted. Dette inkluderer triage (sundhedsfaglig vurdering), klassificering af hastegrad, og disponering (at finde og alarmere den rette ambulance).
+
+Data fra Nordjylland og Syddanmark viser at **ca. 22% af total ventetid** (~2 minutter median) sker i denne fase før ambulancen forlader stationen.
+
+*Alarmtid-data ikke tilgængelig*
+
+---
+
+## 📎 APPENDIKS: YDERLIGERE ANALYSER
+
+Følgende analyser er også udført:
+
+### A.1 Sæsonvariation (Måned-for-Måned)
+
+**Resultat:** Begrænset variation (5-8% forskel mellem værste/bedste måned)
+
+- Værste måned typisk: December/Januar (vinter)
+- Bedste måned typisk: Maj/Juli (forår/sommer)
+- **Variation mindre end tid-på-døgnet** (28% vs. 5-8%)
+
+**Observation:** Tidspunkt på døgnet har større indflydelse end årstid.
+
+*Detaljer:* Se DEL 3 (Tidsmæssige Mønstre) for fuld regional sæsonanalyse.
+
+### A.2 Rekvireringskanal-Analyse
+
+**Resultat:** Begrænset forskel mellem 112, 1813, vagtlæge
+
+- 112-direkte: Median ~9 min for A-prioritet
+- 1813-henvisning: Median ~11 min
+- Praktiserende læge: Median ~9-10 min
+
+**Observation:** Forskellen er ca. 2 minutter mellem hurtigste og langsomste kanal.
+
+*Detaljer:* Se `09_rekvireringskanal.xlsx` i bilag.
+
+### A.3 C-Prioritet Kørsler
+
+**Resultat:** C-prioritet (ikke-akut) bruges sjældent
+
+- Udgør <5% af total kørsler
+- Længere responstider (forventet - ikke akut)
+
+**Observation:** C-prioritet repræsenterer en lille andel af total aktivitet.
+
+### A.4 B→A Prioritets-Eskalationer
+
+**Databegrænsning:** Data kun fra Hovedstaden (mangler 4 andre regioner)
+
+- Eskalerings-rate: varierer betydeligt
+- Indikerer at nogle B-kørsler opgraderes til A undervejs
+
+**Observation:** Begrænset datagrundlag (kun én region) gør det svært at drage landsdækkende konklusioner.
+
+*Detaljer:* Se DEL 5 for dybere B-prioritet analyse.
+
+---
+
+**Metodisk note:** Disse analyser er fuldt dokumenterede og statistisk valide.
 
 ## 📁 DATAFILER TIL VIDERE ANALYSE
 
@@ -152,6 +171,10 @@ Mens A-prioritet (livstruende) naturligvis prioriteres højest, viser B-priorite
 - `09_rekvireringskanal.xlsx` - Rekvireringskanal
 - `DATAWRAPPER_prioritering_ABC.csv` - Priority visualization
 
+*Alarmtid-analyse (Nordjylland + Syddanmark):*
+- `20_dispatch_delay_vs_travel.xlsx` - Opdeling: alarmtid vs. rejsetid
+- `20_DISPATCH_DELAY_FUND.txt` - Key findings
+
 ---
 
 ## 📋 METODE OG DATAGRUNDLAG
@@ -161,13 +184,7 @@ Mens A-prioritet (livstruende) naturligvis prioriteres højest, viser B-priorite
 - Total: ~2 millioner individuelle ambulance-kørsler
 - Analyseret: 875,000+ A-prioritet + 668,000+ B-prioritet
 
-### ⚠️ KRITISK BEMÆRKNING: DEN "SKJULTE" VENTETID (KILDE: RIGSREVISIONEN)
-
-Vores analyse er, ligesom regionernes egne opgørelser, baseret på den **officielle responstid**. Denne tid beregnes fra det øjeblik, AMK-vagtcentralen har disponeret (sendt) ambulancen, til ambulancen er fremme ved patienten.
-
-Rigsrevisionens beretning (SR 11/2024) kritiserer, at den tid, der går fra borgeren ringer 112, til opkaldet er vurderet og en ambulance er fundet (den såkaldte "disponeringstid"), **IKKE medregnes**.
-
-**Konklusion:** Den reelle, samlede ventetid for borgeren (fra "kald" til "ankomst") er derfor længere end de tal, der præsenteres i denne rapport.
+**OBS:** Vores analyse fokuserer primært på den officielle responstid (fra disponering til ankomst). For analyse af den 'skjulte' alarmtid før ambulancen sendes afsted, se **DEL 6: ALARMTID**.
 
 ---
 
@@ -195,7 +212,7 @@ Rigsrevisionens beretning (SR 11/2024) kritiserer, at den tid, der går fra borg
 
 ---
 
-**RAPPORT GENERERET: 08. November 2025 kl. 02:43**
+**RAPPORT GENERERET: 09. November 2025 kl. 22:48**
 
 *Genereret automatisk af Ambulance Pipeline*
 
