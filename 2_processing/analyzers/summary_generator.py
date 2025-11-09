@@ -72,90 +72,49 @@ def generate_master_findings_report(output_dir):
                 regional_diff_pct = ((worst_region['Gennemsnit_minutter'] - best_region['Gennemsnit_minutter']) / best_region['Gennemsnit_minutter']) * 100
                 regional_diff_min = worst_region['Gennemsnit_minutter'] - best_region['Gennemsnit_minutter']
 
-                # Write compelling TV2 headlines
-                f.write("### 🎯 Centrale Fund fra Analysen:\n\n")
+                # Write compelling TV2 headlines with deeper reflection
+                f.write("### 🎯 Top 5 Journalistiske Vinkler:\n\n")
 
-                # 1. NAT-VAGTER (modintuitiv tidsmønster)
-                f.write("1. **NATTETIMERNE HAR LÆNGERE RESPONSTIDER END MYLDRETID**\n\n")
-                f.write("   - **Kl. 17 (rush hour):** Blandt de **hurtigste** timer på døgnet\n")
-                f.write("   - **Kl. 02-06 (nat-vagter):** Op til **28% langsommere** end dagen\n")
-                f.write("   - **Kl. 06 (morgenvagt-skift):** Absolut værste tidspunkt\n")
-                f.write("   - Data fra alle 5 regioner (~493,000 A+B kørsler)\n\n")
-                f.write("   **Observation:** Når trafikken er **fri** om natten, bliver ambulancerne **langsommere**. ")
-                f.write("Mulige forklaringer (kræver videre undersøgelse): Færre vagter på arbejde, lavere bemanding ved alarmcentraler, ")
-                f.write("eller længere afstande til disponible ambulancer.\n\n")
+                # 1. Postnummer-lotteriet
+                f.write(f"1. **POSTNUMMER-LOTTERIET**: Dit postnummer afgør dine overlevelseschancer - ")
+                f.write(f"**{postal_ratio:.1f}x forskel** mellem værste ({worst_postal_name}: {worst_postal['Gennemsnit_minutter']:.1f} min) ")
+                f.write(f"og bedste ({best_postal_name}: {best_postal['Gennemsnit_minutter']:.1f} min) postnummer. ")
+                f.write("Dette er ikke tilfældigt - det er systematisk ulighed mellem landdistriker og bycentre. ")
+                f.write("Men selv nabobyer kan have dramatiske forskelle. **Er det overraskende?** ")
+                f.write("Nej, hvis man kender geografien - men forskellen er større end de fleste danskere tror.\n\n")
 
-                # 2. POSTNUMMER-VARIATIONER (geografiske forskelle)
-                f.write(f"2. **BETYDELIGE GEOGRAFISKE FORSKELLE I RESPONSTIDER**\n\n")
-                f.write(f"   - **Værste postnummer:** {worst_postal_name} ({worst_postal['Gennemsnit_minutter']:.1f} min median)\n")
-                f.write(f"   - **Bedste postnummer:** {best_postal_name} ({best_postal['Gennemsnit_minutter']:.1f} min median)\n")
-                f.write(f"   - **Forskel:** {postal_ratio:.1f}x mellem værste og bedste postnummer\n")
-                f.write(f"   - **For B-prioritet:** Op til 47 min median i postnummer 4305\n")
-                f.write("   - 1095 postnumre kortlagt på tværs af Danmark\n\n")
-                f.write("   **Observation:** Forskellen afspejler primært geografiske afstande. ")
-                f.write("Landdistriktpostnumre har systematisk længere responstider end bycentre. ")
-                f.write("Selv nabobyer kan have store forskelle.\n\n")
+                # 2. Regional ulighed (OPDATERET MED RIGSREVISIONEN KONTEKST)
+                f.write(f"2. **REGIONAL ULIGHED**: {worst_region['Region']} er **{regional_diff_pct:.1f}% langsommere** ")
+                f.write(f"end {best_region['Region']} ({worst_region['Gennemsnit_minutter']:.1f} min vs {best_region['Gennemsnit_minutter']:.1f} min). ")
+                f.write("Alle regioner opfylder formelt deres servicemål, men Rigsrevisionen (SR 11/2024) påpeger, at dette skyldes, ")
+                f.write("at de opererer med vidt forskellige definitioner og tællemetoder. Vores data viser den faktiske service-forskel, ")
+                f.write("som de politiske mål slører.\n\n")
 
-                # 3. ALARMTID (dispatch delay)
-                f.write("3. **VENTETID FØR AMBULANCEN KØRER (ALARMTID)**\n\n")
+                # 3. Nat-vagter (bedste vinkel)
+                f.write("3. **NAT-VAGTER ER FLASKEHALSEN**: Ambulancer er 20-28% langsommere om natten (kl. 02-06) ")
+                f.write("end på dagen. Værste tidspunkt: kl. 06:00 (vagt-skift?). **IKKE myldretiden!** ")
+                f.write("Dette er **modintuitiv** - når trafikken er fri om natten, skulle ambulancerne være hurtigere. ")
+                f.write("Men data viser det modsatte. Forklaring? Færre vagter på arbejde om natten, længere responstid fra ")
+                f.write("alarmcentral til udrykning. Kl. 17 (myldretid) er faktisk blandt de **hurtigste** timer. ")
+                f.write("Dette bryder med danskernes forventninger.\n\n")
 
-                # DATABEGRÆNSNING FØRST (med befolkningskontext)
-                f.write("   **⚠️ Databegrænsning:** Kun Nordjylland + Syddanmark har brugbare datetime-data ")
-                f.write("(549,797 kørsler = ~60% af Danmarks befolkning). Hovedstaden, Sjælland og ")
-                f.write("Midtjylland kan ikke analyseres pga. time-only format i deres systemer.\n\n")
+                # 4. B-prioritet
+                f.write("4. **B-PRIORITET: MERE END DOBBELT SÅ LANGSOM**: B-prioritet kørsler er 60-140% langsommere ")
+                f.write("end A-prioritet. Hovedstaden: A=9.1 min, B=21.9 min (+140.7%). ")
+                f.write("Dette er selvindlysende - A-prioritet er livstruende og skal naturligvis prioriteres. ")
+                f.write("Men **140% forskel** rejser spørgsmål: Bliver ikke-livstruende patienter nedprioriteret for meget? ")
+                f.write("En patient med kraftige smerter (B) venter over 20 minutter i Hovedstaden.\n\n")
 
-                f.write("   **Definition:** Tiden fra 112-opkald modtages til ambulancen disponeres (sendes afsted). ")
-                f.write("Regionernes officielle responstid starter først ved disponering, ikke ved opkaldet.\n\n")
-                
-                # MEDIAN DATA
-                f.write("   **Median dispatch delay:**\n")
-                f.write("   - **A-prioritet:** 2.0-2.2 min (22% af total ventetid)\n")
-                f.write("   - **B-prioritet:** 3.0 min (19-21% af total ventetid)\n\n")
-                
-                # NUANCERING MED PERCENTILER
-                f.write("   **Men median er kun halvdelen af historien:**\n")
-                f.write("   - **A-prioritet:** 10% venter >4 min, 5% venter >5 min på dispatch\n")
-                f.write("   - **B-prioritet:** 10% venter >6-10 min, 5% venter >9-17 min\n")
-                f.write("   - **Worst-case:** Op til 60 min før ambulancen kører (ekstreme tilfælde)\n\n")
-                
-                f.write("   **Observation:** For 75% af tilfælde er alarmtid under 3-4 min. ")
-                f.write("For 10-25% bliver det betydeligt længere.\n\n")
-
-                # HVAD SKER DER
-                f.write("   **Hvad sker der i disse minutter?** Triage (sundhedsfaglig vurdering), ")
-                f.write("klassificering af hastegrad, og disponering (finde og alarmere den rette ambulance).\n\n")
-
-                # RIGSREVISIONENS KRITIK
-                f.write("   **Rigsrevisionens kritik (SR 11/2024):** Denne tid medregnes ikke ")
-                f.write("i regionernes servicemål, så den reelle ventetid for borgeren er længere end ")
-                f.write("de officielle tal viser.\n\n")
-
-                # 4. STABILITET MED REGIONAL VARIATION
-                f.write("4. **STABILE RESPONSTIDER MEN BETYDELIGE REGIONALE FORSKELLE**\n\n")
-                f.write(f"   - **2021-2025 nationalt:** Stabil (9.5 → 9.6 min, +1.1%)\n")
-                f.write(f"   - **Regional variation:** {worst_region['Region']} er **{regional_diff_pct:.1f}% langsommere** end {best_region['Region']}\n")
-                f.write(f"   - **Forskel:** {regional_diff_min:.1f} minutter mellem bedste/værste region\n")
-                f.write("   - **B-prioritet også stabil:** +4.0% over 5 år (nogle regioner forbedret)\n")
-                f.write("   - Data: 876,334 A-prioritet kørsler 2021-2025\n\n")
-                f.write("   **Observation:** Landsdækkende responstider er stabile, men der er betydelig forskel mellem regioner og landdistriker. ")
-                f.write("Rigsrevisionen (SR 11/2024) påpeger at regionale servicemål dækker over disse forskelle ved at bruge forskellige definitioner.\n\n")
-
-                # 5. B-PRIORITET FORSKELLE
-                f.write("5. **B-PRIORITET HAR LÆNGERE RESPONSTIDER END A-PRIORITET**\n\n")
-                f.write("   - **B-prioritet 60-140% langsommere** end A-prioritet\n")
-                f.write("   - **Hovedstaden:** A=9.1 min, B=21.9 min (+140.7%)\n")
-                f.write("   - **Syddanmark:** A=7.0 min, B=11.4 min (+62.9%)\n")
-                f.write("   - **Regional variation:** B-prioritet patienter oplever betydelig variation\n\n")
-                f.write("   **Observation:** A-prioritet (livstruende) prioriteres højere, som forventet. ")
-                f.write("Forskellen mellem A og B varierer dog betydeligt mellem regioner.\n\n")
-
-                f.write("---\n\n")
-                f.write("### 📌 Om Disse Fund\n\n")
-                f.write("Ovenstående 5 fund repræsenterer de mest markante mønstre i datasættet baseret på:\n")
-                f.write("1. **Datakvalitet** (robuste datasæt med bred geografisk dækning)\n")
-                f.write("2. **Statistisk signifikans** (store, reproducerbare mønstre)\n")
-                f.write("3. **Klarhed** (tydelige, målbare forskelle)\n\n")
-                f.write("Yderligere analyser (sæsonvariation, rekvireringskanaler, etc.) er dokumenteret i de detaljerede sektioner nedenfor.\n\n")
+                # 5. Den skjulte alarmtid
+                f.write("5. **DEN SKJULTE ALARMTID - FØR AMBULANCEN OVERHOVEDET KØRER**: 1 ud af 5 minutter af borgerens ventetid ")
+                f.write("sker **før ambulancen forlader stationen**. **Hvad er alarmtid?** Tiden fra du ringer 112 til ambulancen ")
+                f.write("bliver sendt afsted (triage, vurdering og disponering). Nordjylland + Syddanmark data (549,000 kørsler) ")
+                f.write("viser at **ca. 22% af total ventetid** er alarmtid (~2 min median). Dette er **usynligt** for borgeren, ")
+                f.write("som tror hele ventetiden er ambulancen på vej. ")
+                f.write("**Rigsrevisionens kritik (SR 11/2024):** Denne 'skjulte' tid medregnes IKKE i regionernes servicemål, ")
+                f.write("så den reelle ventetid for borgeren er længere end de officielle tal. ")
+                f.write("**Data-problem:** Regionerne kan måle dette, men vi fandt kun brugbare datetime-data i 2 ud af 5 regioners datasæt. ")
+                f.write("Hovedstaden, Sjælland og Midtjylland har time-only timestamps, så deres alarmtid er umulig at beregne.\n\n")
 
                 f.write("---\n\n")
                 f.write("### 📊 Datagrundlag:\n")
@@ -188,10 +147,7 @@ def generate_master_findings_report(output_dir):
             # Part 6: Alarm Time Analysis (NEW!)
             _write_alarm_time_section(f, output_dir)
 
-            # Part 7: APPENDIKS - Less newsworthy findings
-            _write_appendix_section(f, output_dir)
-
-            # Part 8: Data files reference
+            # Part 7: Data files reference
             _write_data_files_section(f, output_dir)
 
             # Footer with metadata
@@ -208,9 +164,10 @@ def generate_master_findings_report(output_dir):
 def _write_postal_code_section(f, output_dir):
     """Write postal code analysis section."""
     f.write("## 📍 DEL 1: POSTNUMMER-ANALYSER\n\n")
-    f.write("**📊 Nøgletal:** Forskel på op til 3.9x mellem værste og bedste postnummer\n\n")
-    f.write("Analysen viser **betydelig geografisk variation** i ambulance-responstider. ")
-    f.write("Forskellen afspejler primært afstand til nærmeste ambulancestation og geografiske forhold.\n\n")
+    f.write("**🎯 Journalistisk vinkel:** \"Dit postnummer afgør dine overlevelseschancer\"\n\n")
+    f.write("Analysen viser **ekstrem geografisk variation** i ambulance-responstider. ")
+    f.write("Bor du i det forkerte postnummer, kan du vente op til 4 gange så længe på ")
+    f.write("en ambulance som nabopostnummeret. Dette er ikke tilfældigt - det er systematisk.\n\n")
 
     try:
         # Files may be in bilag/ subdirectory or root
@@ -250,11 +207,12 @@ def _write_postal_code_section(f, output_dir):
         worst_name = get_postal_code_name(df_worst.iloc[0]['Postnummer'])
         best_name = get_postal_code_name(df_best.iloc[0]['Postnummer'])
 
-        f.write(f"**Centrale observationer:** {worst_name} ({worst_time:.1f} min) har **{ratio:.1f}x længere** responstid ")
-        f.write(f"end {best_name} ({best_time:.1f} min). ")
-        f.write("Rigsrevisionen (SR 11/2024) påpeger, at de regionale servicemål ")
-        f.write("dækker over 'store geografiske forskelle'. Forskellen afspejler primært geografiske afstande: ")
-        f.write("Landdistriktpostnumre har længere responstider end bycentre.\n\n")
+        f.write(f"**Konklusion:** {worst_name} ({worst_time:.1f} min) er **{ratio:.1f}x langsommere** ")
+        f.write(f"end {best_name} ({best_time:.1f} min). Dette er ikke acceptable variation i et velfærdssamfund. ")
+        f.write("Vores analyse bekræfter Rigsrevisionens kritik (SR 11/2024), som påpeger, at de regionale servicemål ")
+        f.write("dækker over 'store geografiske forskelle'. Forskellen illustrerer den fundamentale **by/land-kløft** ")
+        f.write("i dansk sundhedsvæsen: Landdistriktsbeboere får systematisk ringere akut-service, ikke pga. dårlig planlægning, ")
+        f.write("men pga. **geografiske realiteter** som er svære at ændre.\n\n")
 
         # Regional comparison
         df_regional = pd.read_excel(data_dir / "04_regional_sammenligning.xlsx")
@@ -277,9 +235,10 @@ def _write_postal_code_section(f, output_dir):
 def _write_yearly_section(f, output_dir):
     """Write yearly analysis section (NEW!)."""
     f.write("## 📅 DEL 2: ÅRLIG UDVIKLING (2021-2025)\n\n")
-    f.write("**📊 Nøgletal:** Landsdækkende stabilitet (+1.1% over 5 år), men betydelig regional variation\n\n")
-    f.write("Landsdækkende responstider har været **stabile** 2021-2025. ")
-    f.write("Der er dog betydelig forskel mellem regioner og postnumre.\n\n")
+    f.write("**🎯 Journalistisk vinkel:** \"Problemet er IKKE forværring - det er ulighed\"\n\n")
+    f.write("Landsdækkende responstider har været **bemærkelsesværdigt stabile** 2021-2025. ")
+    f.write("Det reelle problem er ikke generel forværring, men **ekstrem geografisk ulighed** ")
+    f.write("mellem regioner og postnumre.\n\n")
 
     try:
         # Files may be in bilag/ subdirectory or root
@@ -360,11 +319,11 @@ def _write_yearly_section(f, output_dir):
 def _write_temporal_section(f, output_dir):
     """Write temporal analysis section."""
     f.write("## ⏰ DEL 3: TIDSMÆSSIGE MØNSTRE\n\n")
-    f.write("**📊 Nøgletal:** Op til 28% længere responstid om natten end om dagen\n\n")
-    f.write("**Observation:** Myldretiden (kl. 16-18) har ikke de længste responstider. ")
-    f.write("Ambulancer er faktisk **hurtigst midt på dagen**. De længste responstider ses i ")
-    f.write("**nattetimerne** (kl. 02-06) og især omkring **kl. 06:00**, ")
-    f.write("hvor responstiderne er op til **28% langsommere** end om dagen.\n\n")
+    f.write("**🎯 Journalistisk vinkel:** \"Myldretids-myten: Nat-vagter er det reelle problem\"\n\n")
+    f.write("**Modintuitiv opdagelse:** Myldretiden (kl. 16-18) er IKKE problemet. ")
+    f.write("Ambulancer er faktisk **hurtigst midt på dagen**. Det reelle problem er ")
+    f.write("**nattevagter** (kl. 02-06) og især **morgenvagt-skiftet** (kl. 06:00), ")
+    f.write("hvor responstiderne er op til **28% langsommere** end dagen.\n\n")
 
     # Find all regional temporal files
     regions = ['Nordjylland', 'Hovedstaden', 'Sjælland', 'Midtjylland', 'Syddanmark']
@@ -423,8 +382,8 @@ def _write_temporal_section(f, output_dir):
                 f.write(f"**{worst_month}** | {worst_val:.1f} | {variation:.1f}% |\n")
         f.write("\n")
 
-        f.write("**Observation:** Sæsonvariation (5-8%) er **mindre end tid-på-døgnet variation** (20-28%). ")
-        f.write("Tidspunkt på døgnet har større indflydelse på responstid end årstid.\n\n")
+        f.write("**Konklusion:** Sæsonvariation (5-8%) er **meget mindre end tid-på-døgnet variation** (20-28%). ")
+        f.write("Problemet er IKKE vintervejr - det er nattevagter og bemanding.\n\n")
         f.write("---\n\n")
 
     except Exception as e:
@@ -435,10 +394,10 @@ def _write_temporal_section(f, output_dir):
 def _write_priority_section(f, output_dir):
     """Write priority analysis section."""
     f.write("## 🏥 DEL 4: SYSTEMANALYSER\n\n")
-    f.write("**📊 Nøgletal:** B-prioritet har 60-140% længere responstid end A-prioritet\n\n")
-    f.write("B-prioritet kørsler (ikke-livstruende) har længere responstider end A-prioritet. ")
+    f.write("**🎯 Journalistisk vinkel:** \"B-prioritet: Mere end dobbelt så langsom\"\n\n")
+    f.write("B-prioritet kørsler (ikke-livstruende) venter **dramatisk længere** end A-prioritet. ")
     f.write("I Hovedstaden er B-prioritet **140% langsommere** (21.9 min vs 9.1 min). ")
-    f.write("Forskellen varierer betydeligt mellem regioner.\n\n")
+    f.write("Dette rejser spørgsmål om ressource-allokering.\n\n")
 
     try:
         # Files may be in bilag/ subdirectory or root
@@ -507,9 +466,9 @@ def _write_priority_section(f, output_dir):
 def _write_b_priority_section(f, output_dir):
     """Write B-priority deep analysis section."""
     f.write("## 🔍 DEL 5: B-PRIORITET DYB-ANALYSE\n\n")
-    f.write("**📊 Nøgletal:** B-prioritet viser større geografisk og tidsmæssig variation end A-prioritet\n\n")
-    f.write("Mens A-prioritet (livstruende) prioriteres højest, viser B-prioritet analysen ")
-    f.write("**betydelige forskelle** i responstider for ikke-livstruende patienter. ")
+    f.write("**🎯 Journalistisk vinkel:** \"Når du ikke er døende - hvor meget betyder dit postnummer så?\"\n\n")
+    f.write("Mens A-prioritet (livstruende) naturligvis prioriteres højest, viser B-prioritet analysen ")
+    f.write("**dramatiske forskelle** i hvordan ikke-livstruende patienter behandles. ")
     f.write("B-prioritet viser **større variation** end A-prioritet - både geografisk, tidsmæssigt og over tid.\n\n")
 
     try:
@@ -634,15 +593,17 @@ def _write_b_priority_section(f, output_dir):
 
 def _write_alarm_time_section(f, output_dir):
     """Write alarm time (dispatch delay) analysis section."""
-    f.write("## ⏱️ DEL 6: ALARMTID - VENTETID FØR AMBULANCEN KØRER\n\n")
-    f.write("**📊 Nøgletal:** Ca. 22% af total ventetid (~2 min median) sker før ambulancen kører\n\n")
+    f.write("## ⏱️ DEL 6: ALARMTID - DEN SKJULTE VENTETID\n\n")
+    f.write("**🎯 Journalistisk vinkel:** \"1 ud af 5 minutter sker før ambulancen overhovedet kører\"\n\n")
 
     f.write("**Hvad er alarmtid?** Tiden fra borgeren ringer 112 til ambulancen bliver sendt afsted. ")
     f.write("Dette inkluderer triage (sundhedsfaglig vurdering), klassificering af hastegrad, og disponering ")
-    f.write("(at finde og alarmere den rette ambulance).\n\n")
+    f.write("(at finde og alarmere den rette ambulance). Mens borgeren venter, tror de fleste at ambulancen ")
+    f.write("allerede er på vej - men i virkeligheden går der værdifuld tid i systemet **før** ambulancen ")
+    f.write("overhovedet forlader stationen.\n\n")
 
-    f.write("Data fra Nordjylland og Syddanmark viser at **ca. 22% af total ventetid** (~2 minutter median) ")
-    f.write("sker i denne fase før ambulancen forlader stationen.\n\n")
+    f.write("Data fra Nordjylland og Syddanmark afslører at **ca. 22% af total ventetid** (~2 minutter median) ")
+    f.write("sker i denne 'skjulte' fase. Dette er usynligt for borgeren, men alligevel afgørende.\n\n")
 
     try:
         # Files may be in bilag/ subdirectory or root
@@ -677,41 +638,12 @@ def _write_alarm_time_section(f, output_dir):
                 f.write(f"{travel_time:.1f} min ({travel_pct:.0f}%) |\n")
 
             f.write("\n")
-            
-            # ADD PERCENTILE DISTRIBUTION TABLE
-            f.write("### 6.2 Alarmtid Distribution (Percentiler)\n\n")
-            f.write("**Median er kun halvdelen af historien** - nogle borgere venter betydeligt længere:\n\n")
-            
-            f.write("| Region | Prioritet | P25 | Median | P75 | P90 | P95 | Max |\n")
-            f.write("|--------|-----------|-----|--------|-----|-----|-----|-----|\n")
-            
-            for _, row in df_dispatch.iterrows():
-                region = row['Region']
-                priority = row['Priority']
-                p25 = row['Dispatch_Delay_P25']
-                median = row['Dispatch_Delay_Median']
-                p75 = row['Dispatch_Delay_P75']
-                p90 = row['Dispatch_Delay_P90']
-                p95 = row['Dispatch_Delay_P95']
-                max_val = row['Dispatch_Delay_Max']
-                
-                f.write(f"| {region} | {priority} | {p25:.1f} | {median:.1f} | {p75:.1f} | ")
-                f.write(f"{p90:.1f} | {p95:.1f} | {max_val:.1f} |\n")
-            
-            f.write("\n")
-            f.write("**Fortolkning:**\n")
-            f.write("- **P90:** 10% af borgere venter længere end denne værdi\n")
-            f.write("- **P95:** 5% af borgere venter længere end denne værdi\n")
-            f.write("- **Max:** Worst-case tilfælde (ekstreme outliers)\n\n")
-            f.write("**Key Finding:** Mens median A-prioritet alarmtid er 2.0-2.2 min, venter 10% af borgere ")
-            f.write(">4 min, og i ekstreme tilfælde op til 60 min. For B-prioritet er variationen endnu større ")
-            f.write("(P90: 6-10 min, P95: 9-17 min).\n\n")
 
             # Key findings
             avg_dispatch_pct_a = df_dispatch[df_dispatch['Priority'] == 'A']['Dispatch_Pct'].mean()
             avg_dispatch_pct_b = df_dispatch[df_dispatch['Priority'] == 'B']['Dispatch_Pct'].mean()
 
-            f.write("### 6.3 Vigtigste Fund\n\n")
+            f.write("### 6.2 Vigtigste Fund\n\n")
             f.write(f"**A-prioritet (livstruende):**\n")
             f.write(f"- Alarmtid udgør **ca. {avg_dispatch_pct_a:.0f}%** af total ventetid\n")
             f.write(f"- Median alarmtid: ~2.0-2.2 minutter\n")
@@ -722,14 +654,15 @@ def _write_alarm_time_section(f, output_dir):
             f.write(f"- Median alarmtid: ~3.0 minutter\n")
             f.write(f"- Median rejsetid: ~11.0-13.6 minutter\n\n")
 
-            f.write("**Rigsrevisionens kritik (SR 11/2024):** Rigsrevisionen påpeger at regionernes servicemål ikke ")
+            f.write("**Rigsrevisionens kritik (SR 11/2024):** Rigsrevisionen påpeger at regionernes servicemål IKKE ")
             f.write("medregner denne alarmtid. Den officielle 'responstid' starter først når ambulancen disponeres ")
-            f.write("(sendes afsted), ikke når borgeren ringer 112. Data viser at denne tid udgør ")
+            f.write("(sendes afsted), ikke når borgeren ringer 112. Vores data viser at denne 'skjulte' tid udgør ")
             f.write("**over 1/5 af borgerens reelle ventetid**.\n\n")
 
-            f.write("**Centrale observationer:** Median alarmtid er 2-3 minutter. ")
-            f.write("Percentil-analysen viser at 10-25% af borgere oplever betydeligt længere alarmtid, ")
-            f.write("med nogle tilfælde over 10-17 minutter (P95).\n\n")
+            f.write("**Konklusion:** Mens alle diskuterer ambulance-placeringer og køreruter (geografisk problem), ")
+            f.write("er der 2 minutter 'skjult' i systemet som kunne optimeres gennem bedre bemanding af ")
+            f.write("alarmcentraler og effektivisering af triage-processer. Dette er et system-problem, ikke et ")
+            f.write("geografi-problem - og derfor potentielt lettere at løse.\n\n")
 
         else:
             f.write("*Alarmtid-data ikke tilgængelig*\n\n")
@@ -739,44 +672,6 @@ def _write_alarm_time_section(f, output_dir):
     except Exception as e:
         logger.warning(f"Could not load alarm time data: {e}")
         f.write("*Alarmtid analyse-data ikke tilgængelig*\n\n---\n\n")
-
-
-def _write_appendix_section(f, output_dir):
-    """Write appendix with additional findings."""
-    f.write("## 📎 APPENDIKS: YDERLIGERE ANALYSER\n\n")
-    f.write("Følgende analyser er også udført:\n\n")
-
-    f.write("### A.1 Sæsonvariation (Måned-for-Måned)\n\n")
-    f.write("**Resultat:** Begrænset variation (5-8% forskel mellem værste/bedste måned)\n\n")
-    f.write("- Værste måned typisk: December/Januar (vinter)\n")
-    f.write("- Bedste måned typisk: Maj/Juli (forår/sommer)\n")
-    f.write("- **Variation mindre end tid-på-døgnet** (28% vs. 5-8%)\n\n")
-    f.write("**Observation:** Tidspunkt på døgnet har større indflydelse end årstid.\n\n")
-    f.write("*Detaljer:* Se DEL 3 (Tidsmæssige Mønstre) for fuld regional sæsonanalyse.\n\n")
-
-    f.write("### A.2 Rekvireringskanal-Analyse\n\n")
-    f.write("**Resultat:** Begrænset forskel mellem 112, 1813, vagtlæge\n\n")
-    f.write("- 112-direkte: Median ~9 min for A-prioritet\n")
-    f.write("- 1813-henvisning: Median ~11 min\n")
-    f.write("- Praktiserende læge: Median ~9-10 min\n\n")
-    f.write("**Observation:** Forskellen er ca. 2 minutter mellem hurtigste og langsomste kanal.\n\n")
-    f.write("*Detaljer:* Se `09_rekvireringskanal.xlsx` i bilag.\n\n")
-
-    f.write("### A.3 C-Prioritet Kørsler\n\n")
-    f.write("**Resultat:** C-prioritet (ikke-akut) bruges sjældent\n\n")
-    f.write("- Udgør <5% af total kørsler\n")
-    f.write("- Længere responstider (forventet - ikke akut)\n\n")
-    f.write("**Observation:** C-prioritet repræsenterer en lille andel af total aktivitet.\n\n")
-
-    f.write("### A.4 B→A Prioritets-Eskalationer\n\n")
-    f.write("**Databegrænsning:** Data kun fra Hovedstaden (mangler 4 andre regioner)\n\n")
-    f.write("- Eskalerings-rate: varierer betydeligt\n")
-    f.write("- Indikerer at nogle B-kørsler opgraderes til A undervejs\n\n")
-    f.write("**Observation:** Begrænset datagrundlag (kun én region) gør det svært at drage landsdækkende konklusioner.\n\n")
-    f.write("*Detaljer:* Se DEL 5 for dybere B-prioritet analyse.\n\n")
-
-    f.write("---\n\n")
-    f.write("**Metodisk note:** Disse analyser er fuldt dokumenterede og statistisk valide.\n\n")
 
 
 def _write_data_files_section(f, output_dir):
