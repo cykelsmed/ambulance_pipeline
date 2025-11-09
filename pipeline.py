@@ -421,6 +421,63 @@ def export_temporal_results(stats, df_filtered, region_name, output_dir, prefix,
         dw_data.to_csv(dw_file, index=False)
 
 
+def _load_regional_data_cache():
+    """Load all regional Excel files into memory cache for B-priority analyses.
+
+    This function loads each region's Excel file ONCE and stores it in a dictionary.
+    The cache is then passed to all B-priority analysis functions, preventing
+    the pipeline from loading the same 400MB+ Excel files multiple times.
+
+    Without caching, the pipeline would load:
+    - Geographic analysis: 5 files
+    - Temporal analysis: 5 files
+    - Yearly analysis: 5 files
+    - Escalation analysis: 1 file
+    Total: 16 Excel file loads causing memory corruption and crashes
+
+    With caching: 5 files loaded once, reused 4 times
+
+    Returns:
+        Dict[str, pd.DataFrame]: Region name → DataFrame mapping
+    """
+    import yaml
+    import pandas as pd
+
+    logger = logging.getLogger(__name__)
+
+    # Load regional configuration
+    regional_config_path = Path(__file__).parent / '2_processing' / 'regional_config.yaml'
+    with open(regional_config_path, 'r', encoding='utf-8') as f:
+        regional_config = yaml.safe_load(f)
+
+    cache = {}
+
+    for region_name, region_config in regional_config['regions'].items():
+        try:
+            file_path = Path(region_config['file'])
+
+            # Handle Nordjylland filename update
+            if 'Nordjylland20251027' in str(file_path):
+                file_path = Path(str(file_path).replace('20251027', '20251029'))
+
+            if not file_path.exists():
+                logger.warning(f"File not found: {file_path}")
+                cache[region_name] = None
+                continue
+
+            sheet_name = region_config['sheet']
+            logger.info(f"  Loading {region_name} into cache...")
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+            cache[region_name] = df
+            logger.info(f"  ✓ Cached {region_name}: {len(df):,} rows")
+
+        except Exception as e:
+            logger.error(f"Failed to cache {region_name}: {e}", exc_info=True)
+            cache[region_name] = None
+
+    return cache
+
+
 def main():
     """Main pipeline execution."""
     start_time = datetime.now()
@@ -536,8 +593,14 @@ def main():
         b_priority_results = {}
 
         try:
+            # Load regional data cache ONCE to avoid loading Excel files 3-4 times
+            # This prevents memory corruption and file handle exhaustion
+            print("   → Loading regional data cache (load once, use 4 times)...")
+            regional_data_cache = _load_regional_data_cache()
+            logger.info(f"Regional data cache loaded: {len(regional_data_cache)} regions")
+
             # Analysis 1: Geographic hotspots
-            geo_result = analyze_b_geographic(output_dir)
+            geo_result = analyze_b_geographic(output_dir, regional_data_cache=regional_data_cache)
             if geo_result.get('status') == 'success':
                 print(f"   ✓ Geographic: {geo_result['total_postal_codes']} postal codes analyzed")
                 print(f"      Worst: {geo_result['worst_postal_code']['postnummer']} ({geo_result['worst_postal_code']['median_minutes']} min)")
@@ -547,7 +610,7 @@ def main():
                 print("   ⚠ Geographic analysis failed")
 
             # Analysis 2: Temporal patterns
-            temporal_result = analyze_b_temporal(output_dir)
+            temporal_result = analyze_b_temporal(output_dir, regional_data_cache=regional_data_cache)
             if temporal_result.get('status') == 'success':
                 print(f"   ✓ Temporal: {temporal_result['regions_processed']} regions analyzed")
                 b_priority_results['temporal'] = temporal_result
@@ -556,7 +619,7 @@ def main():
                 print("   ⚠ Temporal analysis failed")
 
             # Analysis 3: Yearly trends
-            yearly_result = analyze_b_yearly_trends(output_dir)
+            yearly_result = analyze_b_yearly_trends(output_dir, regional_data_cache=regional_data_cache)
             if yearly_result.get('status') == 'success':
                 years = yearly_result['years_analyzed']
                 trend = yearly_result.get('national_trend_percent')
@@ -567,7 +630,7 @@ def main():
                 print("   ⚠ Yearly trend analysis failed")
 
             # Analysis 4: B→A escalations (Hovedstaden only)
-            escalation_result = analyze_b_to_a_escalations(output_dir)
+            escalation_result = analyze_b_to_a_escalations(output_dir, regional_data_cache=regional_data_cache)
             if escalation_result.get('status') == 'success':
                 rate = escalation_result['escalation_rate']
                 print(f"   ✓ B→A escalations: {rate}% upgrade rate (Hovedstaden)")
@@ -579,6 +642,11 @@ def main():
                 print("   ⚠ Escalation analysis failed")
 
             logger.info(f"B-priority analyses completed: {len(b_priority_results)} successful")
+
+            # Clear cache to free memory
+            del regional_data_cache
+            import gc
+            gc.collect()
 
         except Exception as e:
             logger.error(f"B-priority analyses failed: {e}", exc_info=True)
