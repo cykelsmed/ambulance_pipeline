@@ -72,39 +72,53 @@ def generate_master_findings_report(output_dir):
                 regional_diff_pct = ((worst_region['Gennemsnit_minutter'] - best_region['Gennemsnit_minutter']) / best_region['Gennemsnit_minutter']) * 100
                 regional_diff_min = worst_region['Gennemsnit_minutter'] - best_region['Gennemsnit_minutter']
 
-                # Write key findings with professional tone
+                # Write key findings with journalistic headlines
                 f.write("### 📊 Top 5 Fund:\n\n")
 
                 # 1. Geografisk variation
-                f.write(f"1. **Geografisk variation**: ")
-                f.write(f"**{postal_ratio:.1f}x forskel** i responstider mellem værste ({worst_postal_name}: {worst_postal['Gennemsnit_minutter']:.1f} min) ")
-                f.write(f"og bedste ({best_postal_name}: {best_postal['Gennemsnit_minutter']:.1f} min) postnummer. ")
-                f.write("Variationen følger et geografisk mønster med landdistriker langsommere end bycentre.\n\n")
+                f.write(f"**1. \"Ambulancen kommer fire gange hurtigere i Esbjerg end i Hobro. ")
+                f.write(f"Din adresse kan betyde 15 minutters forskel.\"**  \n")
+                f.write(f"*{postal_ratio:.1f}x forskel mellem bedste og værste postnummer*\n\n")
+                f.write(f"Værste postnummer ({worst_postal_name}: {worst_postal['Gennemsnit_minutter']:.1f} min) ")
+                f.write(f"har {postal_ratio:.1f}x længere responstid end bedste ({best_postal_name}: ")
+                f.write(f"{best_postal['Gennemsnit_minutter']:.1f} min). Variationen følger et geografisk mønster ")
+                f.write(f"med landdistriker langsommere end bycentre.\n\n")
 
                 # 2. Regional forskel
-                f.write(f"2. **Regional forskel**: {worst_region['Region']} er **{regional_diff_pct:.1f}% langsommere** ")
-                f.write(f"end {best_region['Region']} ({worst_region['Gennemsnit_minutter']:.1f} min vs {best_region['Gennemsnit_minutter']:.1f} min). ")
-                f.write("Alle regioner opfylder formelt deres servicemål. Rigsrevisionen (SR 11/2024) påpeger at ")
-                f.write("regionerne opererer med forskellige definitioner og tællemetoder.\n\n")
+                f.write(f"**2. \"Alle regioner når deres servicemål – men Nordjylland er alligevel 45% langsommere end Syddanmark. ")
+                f.write(f"Rigsrevisionen kritiserer at regionerne bruger forskellige målemetoder.\"**  \n")
+                f.write(f"*{regional_diff_min:.1f} minutters forskel mellem hurtigste og langsomste region*\n\n")
+                f.write(f"{worst_region['Region']} er **{regional_diff_pct:.1f}% langsommere** end ")
+                f.write(f"{best_region['Region']} ({worst_region['Gennemsnit_minutter']:.1f} min vs ")
+                f.write(f"{best_region['Gennemsnit_minutter']:.1f} min). Alle regioner opfylder formelt deres servicemål. ")
+                f.write(f"Rigsrevisionen (SR 11/2024) påpeger at regionerne opererer med forskellige definitioner ")
+                f.write(f"og tællemetoder.\n\n")
 
                 # 3. Tidsmæssig variation
-                f.write("3. **Tidsmæssig variation**: Ambulancer er 20-28% langsommere om natten (kl. 02-06) ")
-                f.write("end på dagen. Værste tidspunkt: kl. 06:00. ")
-                f.write("Data viser at kl. 17 (myldretid) er blandt de hurtigste timer, ")
-                f.write("mens nat og tidlig morgen har længere responstider.\n\n")
+                f.write(f"**3. \"Når trafikken letter om natten, bliver ambulancerne langsommere. ")
+                f.write(f"Myldretiden kl. 17 er faktisk blandt dagens hurtigste timer.\"**  \n")
+                f.write(f"*20-28% variation mellem tidspunkter på døgnet*\n\n")
+                f.write(f"Ambulancer er 20-28% langsommere om natten (kl. 02-06) end på dagen. ")
+                f.write(f"Værste tidspunkt: kl. 06:00. Responstider er korteste kl. 08, mens kl. 17 (myldretid) ")
+                f.write(f"er blandt de hurtigste timer.\n\n")
 
-                # 4. Prioritetsforskelle
-                f.write("4. **Prioritetsforskelle**: B-prioritet kørsler er 60-140% langsommere ")
-                f.write("end A-prioritet. Hovedstaden: A=9.1 min, B=21.9 min (+140.7%). ")
-                f.write("A-prioritet dækker livstruende tilfælde, mens B-prioritet omfatter ikke-livstruende tilfælde.\n\n")
+                # 4. B-prioritet
+                f.write(f"**4. \"Ikke livstruende? Så venter du over dobbelt så længe. ")
+                f.write(f"I Hovedstaden er B-patienter 140% langsommere end A-patienter.\"**  \n")
+                f.write(f"*60-140% forskel mellem A og B-prioritet*\n\n")
+                f.write(f"B-prioritet kørsler er 60-140% langsommere end A-prioritet. ")
+                f.write(f"Hovedstaden: A=9.1 min, B=21.9 min (+140.7%). A-prioritet dækker livstruende tilfælde, ")
+                f.write(f"mens B-prioritet omfatter ikke-livstruende tilfælde.\n\n")
 
                 # 5. Alarmtid
-                f.write("5. **Alarmtid før ambulancen kører**: Tiden fra 112-opkald til ambulancen sendes afsted ")
-                f.write("(triage, vurdering og disponering) udgør ca. 22% af total ventetid (~2 min median). ")
-                f.write("Data fra Nordjylland + Syddanmark (549,000 kørsler). ")
-                f.write("Rigsrevisionens notat (SR 11/2024): Denne tid medregnes ikke i regionernes servicemål. ")
-                f.write("**Databegrænsning:** Kun 2 ud af 5 regioner har datetime-data der muliggør denne analyse. ")
-                f.write("Hovedstaden, Sjælland og Midtjylland bruger time-only format.\n\n")
+                f.write(f"**5. \"To minutter går før ambulancen overhovedet forlader stationen. ")
+                f.write(f"Regionernes servicemål starter først når ambulancen sendes afsted – ikke når du ringer 112.\"**  \n")
+                f.write(f"*Ca. 22% af ventetid sker før ambulancen sendes afsted*\n\n")
+                f.write(f"Tiden fra 112-opkald til ambulancen sendes afsted udgør ca. 22% af total ventetid ")
+                f.write(f"(~2 min median). Data fra Nordjylland + Syddanmark (549,000 kørsler). ")
+                f.write(f"Rigsrevisionens notat (SR 11/2024): Denne tid medregnes ikke i regionernes servicemål. ")
+                f.write(f"**Databegrænsning:** Kun 2 ud af 5 regioner har datetime-data der muliggør denne analyse. ")
+                f.write(f"Hovedstaden, Sjælland og Midtjylland bruger time-only format.\n\n")
 
                 f.write("---\n\n")
                 f.write("### 📊 Datagrundlag:\n")
