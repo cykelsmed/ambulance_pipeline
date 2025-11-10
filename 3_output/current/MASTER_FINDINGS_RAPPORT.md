@@ -1,7 +1,7 @@
 # MASTER FINDINGS RAPPORT
 ## Komplet Analyse af Ambulance Responstider i Danmark
 
-**Genereret:** 10. November 2025 kl. 01:12
+**Genereret:** 10. November 2025 kl. 10:35
 **Periode:** 2021-2025 (5 år)
 **Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling
 
@@ -63,6 +63,16 @@ Alle regioner undtagen Hovedstaden har værste responstider tidlig morgen (kl. 0
 - **1095 postnumre** kortlagt
 - **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)
 
+### ⚠️ Datakvalitet-Note: Helikopter-Data
+
+**Vigtigt:** Analysen inkluderer alle A-prioritet kørsler i regionernes data, inklusiv kørsler hvor helikopter var den første responder. De regionale datasæt indeholder ikke oplysninger om hvem der var "først på skadestedet" (ambulance vs. helikopter). Dette kan påvirke postnummer-statistikkerne for øer og yderområder hvor helikopter ofte indsættes.
+
+**Eksempler fra data:**
+- Nordjylland: 142 helikopter-kørsler ud af 85,063 A-kørsler (0.17%)
+- Øer som Fur (7884) og Fejø (4944) i Top 10 værste kan være påvirket
+
+**Konsekvens:** Postnummer-responstider kan være en blanding af ambulance- og helikopter-responstider. For at få det fulde billede bør nationale helikopter-data analyseres separat.
+
 ## 📍 DEL 1: POSTNUMMER-ANALYSER
 
 **Hovedfund:** Markant geografisk variation i ambulance-responstider.
@@ -87,6 +97,8 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 | 8 | **4874 Gedser** | Sjælland | 18.3 | 433 |
 | 9 | **5935 Bagenkop** | Syddanmark | 18.2 | 189 |
 | 10 | **9620 Aalestrup** | Midtjylland | 18.0 | 82 |
+
+**Note om øer:** Fur (#2) og Fejø (#4) er øer med kun færgeforbindelse. Responstider inkluderer helikopter-kørsler, men datasættet indeholder ikke oplysning om hvem der var først på skadestedet. Se datakvalitet-note i executive summary.
 
 ### 1.2 Top 10 BEDSTE Postnumre
 
@@ -422,7 +434,7 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 
 ---
 
-**RAPPORT GENERERET: 10. November 2025 kl. 01:12**
+**RAPPORT GENERERET: 10. November 2025 kl. 10:35**
 
 *Genereret automatisk af Ambulance Pipeline*
 

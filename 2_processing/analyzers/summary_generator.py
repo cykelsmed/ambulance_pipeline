@@ -160,6 +160,20 @@ def generate_master_findings_report(output_dir):
                 f.write(f"- **{len(pd.read_excel(data_dir / '01_alle_postnumre.xlsx'))} postnumre** kortlagt\n")
                 f.write("- **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)\n\n")
 
+                # Add data quality disclaimer about helicopter data
+                f.write("### ⚠️ Datakvalitet-Note: Helikopter-Data\n\n")
+                f.write("**Vigtigt:** Analysen inkluderer alle A-prioritet kørsler i regionernes data, ")
+                f.write("inklusiv kørsler hvor helikopter var den første responder. De regionale datasæt ")
+                f.write("indeholder ikke oplysninger om hvem der var \"først på skadestedet\" (ambulance vs. helikopter). ")
+                f.write("Dette kan påvirke postnummer-statistikkerne for øer og yderområder hvor helikopter ")
+                f.write("ofte indsættes.\n\n")
+                f.write("**Eksempler fra data:**\n")
+                f.write("- Nordjylland: 142 helikopter-kørsler ud af 85,063 A-kørsler (0.17%)\n")
+                f.write("- Øer som Fur (7884) og Fejø (4944) i Top 10 værste kan være påvirket\n\n")
+                f.write("**Konsekvens:** Postnummer-responstider kan være en blanding af ambulance- og ")
+                f.write("helikopter-responstider. For at få det fulde billede bør nationale helikopter-data ")
+                f.write("analyseres separat.\n\n")
+
             except Exception as e:
                 logger.warning(f"Could not generate executive summary stats: {e}")
                 f.write("*TV2 key findings ikke tilgængelige - se detaljerede sektioner nedenfor*\n\n")
@@ -221,6 +235,11 @@ def _write_postal_code_section(f, output_dir):
             f.write(f"| {i+1} | **{postal_name}** | {row['Region']} | ")
             f.write(f"{row['Gennemsnit_minutter']:.1f} | {int(row['Antal_ture']):,} |\n")
         f.write("\n")
+
+        # Add note about islands and helicopter data
+        f.write("**Note om øer:** Fur (#2) og Fejø (#4) er øer med kun færgeforbindelse. ")
+        f.write("Responstider inkluderer helikopter-kørsler, men datasættet indeholder ikke ")
+        f.write("oplysning om hvem der var først på skadestedet. Se datakvalitet-note i executive summary.\n\n")
 
         # Top 10 best
         df_best = pd.read_excel(data_dir / "03_top_10_bedste.xlsx")
