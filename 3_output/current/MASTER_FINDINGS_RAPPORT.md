@@ -1,7 +1,7 @@
 # MASTER FINDINGS RAPPORT
 ## Komplet Analyse af Ambulance Responstider i Danmark
 
-**Genereret:** 10. November 2025 kl. 00:50
+**Genereret:** 10. November 2025 kl. 01:12
 **Periode:** 2021-2025 (5 år)
 **Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling
 
@@ -9,7 +9,7 @@
 
 ## 📋 HOVEDHISTORIER - KEY FINDINGS
 
-### 📊 Top 5 Fund:
+### 📊 Top 8 Fund:
 
 **1. "Ambulancen kommer fire gange hurtigere i Esbjerg end i Hobro. Din adresse kan betyde 15 minutters forskel."**  
 *3.9x forskel mellem bedste og værste postnummer*
@@ -36,6 +36,21 @@ B-prioritet kørsler er 60-140% langsommere end A-prioritet. Hovedstaden: A=9.1 
 
 Tiden fra 112-opkald til ambulancen sendes afsted udgør ca. 22% af total ventetid (~2 min median). Data fra Nordjylland + Syddanmark (549,000 kørsler). Rigsrevisionens notat (SR 11/2024): Denne tid medregnes ikke i regionernes servicemål. **Databegrænsning:** Kun 2 ud af 5 regioner har datetime-data der muliggør denne analyse. Hovedstaden, Sjælland og Midtjylland bruger time-only format.
 
+**6. "Ring 112 - ikke 1813. Lægevagten sender 46% langsommere ambulancer"**  
+*8.6 minutter forskel mellem 112 og 1813*
+
+Ambulancer rekvireret gennem 1813 (lægevagten) har 26.9 minutters gennemsnitlig responstid, sammenlignet med 18.3 minutter for 112-opkald. Forskellen er særligt markant i Hovedstaden, hvor B-prioritet gennem 1813 har 25.4 minutters median responstid. Data dækker 1.7 millioner kørsler fra alle regioner. **Datadetalje:** 112: 1,055,902 kørsler | 1813: 98,169 kørsler
+
+**7. "I indre København venter ikke-livstruende patienter syv gange længere end livstruende"**  
+*B/A-ratio på 6.9x i postnummer 1461*
+
+Mens den gennemsnitlige forskel mellem A og B-prioritet i Hovedstaden er 140%, viser postnumre i indre København (1xxx) ekstremt større forskelle. Top 10 postnumre med størst B/A-forskel er alle i Hovedstaden: Postnummer 1461 (B=27.6 min, A=4.0 min, ratio: 6.9x), Postnummer 1126 (B=39.7 min, A=6.2 min, ratio: 6.4x), Postnummer 1777 (B=36.9 min, A=5.9 min, ratio: 6.3x). **Mønster:** Je tættere på København centrum, desto større forskel mellem A og B-prioritet.
+
+**8. "Hovedstaden skiller sig ud: Værst kl. 23 - ikke ved morgenvagt-skifte"**  
+*Eneste region hvor aften er problemet*
+
+Alle regioner undtagen Hovedstaden har værste responstider tidlig morgen (kl. 05-06). Hovedstaden har værste responstid kl. 23 (14.9 min). Tidsperiode-gennemsnit Hovedstaden: Dag (06-18): 13.3 min, Nat (00-06): 14.1 min, Aften (18-24): 14.0 min (værst kl. 23). Til sammenligning har Nordjylland værst kl. 06 (16.1 min), Sjælland værst kl. 06 (13.2 min), Midtjylland værst kl. 05 (12.6 min), Syddanmark værst kl. 06 (9.2 min).
+
 ---
 
 ### 📊 Datagrundlag:
@@ -43,8 +58,10 @@ Tiden fra 112-opkald til ambulancen sendes afsted udgør ca. 22% af total ventet
 - **493,000+ A+B-kørsler** i tidsmæssige analyser (fuld belastning)
 - **549,000+ kørsler** med alarmtid-analyse (Nordjylland + Syddanmark)
 - **1,543,000+ total kørsler** analyseret (inkl. C-prioritet)
+- **1,724,810 total kørsler** analyseret inkl. rekvireringskanal-data
 - **5 års data** (2021-2025) fra alle 5 danske regioner
 - **1095 postnumre** kortlagt
+- **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)
 
 ## 📍 DEL 1: POSTNUMMER-ANALYSER
 
@@ -405,7 +422,7 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 
 ---
 
-**RAPPORT GENERERET: 10. November 2025 kl. 00:51**
+**RAPPORT GENERERET: 10. November 2025 kl. 01:12**
 
 *Genereret automatisk af Ambulance Pipeline*
 

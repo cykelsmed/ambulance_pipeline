@@ -73,7 +73,7 @@ def generate_master_findings_report(output_dir):
                 regional_diff_min = worst_region['Gennemsnit_minutter'] - best_region['Gennemsnit_minutter']
 
                 # Write key findings with journalistic headlines
-                f.write("### 📊 Top 5 Fund:\n\n")
+                f.write("### 📊 Top 8 Fund:\n\n")
 
                 # 1. Geografisk variation
                 f.write(f"**1. \"Ambulancen kommer fire gange hurtigere i Esbjerg end i Hobro. ")
@@ -120,14 +120,45 @@ def generate_master_findings_report(output_dir):
                 f.write(f"**Databegrænsning:** Kun 2 ud af 5 regioner har datetime-data der muliggør denne analyse. ")
                 f.write(f"Hovedstaden, Sjælland og Midtjylland bruger time-only format.\n\n")
 
+                # 6. 1813 vs 112
+                f.write(f"**6. \"Ring 112 - ikke 1813. Lægevagten sender 46% langsommere ambulancer\"**  \n")
+                f.write(f"*8.6 minutter forskel mellem 112 og 1813*\n\n")
+                f.write(f"Ambulancer rekvireret gennem 1813 (lægevagten) har 26.9 minutters gennemsnitlig ")
+                f.write(f"responstid, sammenlignet med 18.3 minutter for 112-opkald. Forskellen er særligt ")
+                f.write(f"markant i Hovedstaden, hvor B-prioritet gennem 1813 har 25.4 minutters median responstid. ")
+                f.write(f"Data dækker 1.7 millioner kørsler fra alle regioner. ")
+                f.write(f"**Datadetalje:** 112: 1,055,902 kørsler | 1813: 98,169 kørsler\n\n")
+
+                # 7. Indre by ekstrem
+                f.write(f"**7. \"I indre København venter ikke-livstruende patienter syv gange længere end livstruende\"**  \n")
+                f.write(f"*B/A-ratio på 6.9x i postnummer 1461*\n\n")
+                f.write(f"Mens den gennemsnitlige forskel mellem A og B-prioritet i Hovedstaden er 140%, ")
+                f.write(f"viser postnumre i indre København (1xxx) ekstremt større forskelle. ")
+                f.write(f"Top 10 postnumre med størst B/A-forskel er alle i Hovedstaden: ")
+                f.write(f"Postnummer 1461 (B=27.6 min, A=4.0 min, ratio: 6.9x), ")
+                f.write(f"Postnummer 1126 (B=39.7 min, A=6.2 min, ratio: 6.4x), ")
+                f.write(f"Postnummer 1777 (B=36.9 min, A=5.9 min, ratio: 6.3x). ")
+                f.write(f"**Mønster:** Je tættere på København centrum, desto større forskel mellem A og B-prioritet.\n\n")
+
+                # 8. Hovedstaden kl. 23
+                f.write(f"**8. \"Hovedstaden skiller sig ud: Værst kl. 23 - ikke ved morgenvagt-skifte\"**  \n")
+                f.write(f"*Eneste region hvor aften er problemet*\n\n")
+                f.write(f"Alle regioner undtagen Hovedstaden har værste responstider tidlig morgen (kl. 05-06). ")
+                f.write(f"Hovedstaden har værste responstid kl. 23 (14.9 min). Tidsperiode-gennemsnit Hovedstaden: ")
+                f.write(f"Dag (06-18): 13.3 min, Nat (00-06): 14.1 min, Aften (18-24): 14.0 min (værst kl. 23). ")
+                f.write(f"Til sammenligning har Nordjylland værst kl. 06 (16.1 min), Sjælland værst kl. 06 (13.2 min), ")
+                f.write(f"Midtjylland værst kl. 05 (12.6 min), Syddanmark værst kl. 06 (9.2 min).\n\n")
+
                 f.write("---\n\n")
                 f.write("### 📊 Datagrundlag:\n")
                 f.write("- **875,000+ A-prioritet kørsler** analyseret (livstruende tilfælde)\n")
                 f.write("- **493,000+ A+B-kørsler** i tidsmæssige analyser (fuld belastning)\n")
                 f.write("- **549,000+ kørsler** med alarmtid-analyse (Nordjylland + Syddanmark)\n")
                 f.write("- **1,543,000+ total kørsler** analyseret (inkl. C-prioritet)\n")
+                f.write("- **1,724,810 total kørsler** analyseret inkl. rekvireringskanal-data\n")
                 f.write("- **5 års data** (2021-2025) fra alle 5 danske regioner\n")
-                f.write(f"- **{len(pd.read_excel(data_dir / '01_alle_postnumre.xlsx'))} postnumre** kortlagt\n\n")
+                f.write(f"- **{len(pd.read_excel(data_dir / '01_alle_postnumre.xlsx'))} postnumre** kortlagt\n")
+                f.write("- **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)\n\n")
 
             except Exception as e:
                 logger.warning(f"Could not generate executive summary stats: {e}")
