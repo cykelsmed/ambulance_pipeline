@@ -1,0 +1,47 @@
+DISPATCH DELAY VS. TRAVEL TIME
+============================================================
+
+ANALYSE AF TOTAL VENTETID FOR BORGEREN
+Opdeling: 112-opkald → dispatch → ankomst
+
+GEOGRAFISK BEGRÆNSNING:
+Kun Nordjylland + Syddanmark har datetime-format timestamps.
+Hovedstaden, Sjælland, og Midtjylland bruger time-only format,
+hvilket ikke kan håndtere tidsdifference hen over midnat.
+
+============================================================
+
+Nordjylland - A-prioritet:
+  Analyseret: 85,016 kørsler (af 85,063 total)
+  Total ventetid (median): 10.2 min
+    → Dispatch delay: 2.2 min (22%)
+    → Rejsetid: 7.6 min (75%)
+
+Nordjylland - B-prioritet:
+  Analyseret: 95,562 kørsler (af 96,025 total)
+  Total ventetid (median): 18.4 min
+    → Dispatch delay: 3.0 min (16%)
+    → Rejsetid: 13.6 min (74%)
+
+Syddanmark - A-prioritet:
+  Analyseret: 205,766 kørsler (af 206,035 total)
+  Total ventetid (median): 9.0 min
+    → Dispatch delay: 2.0 min (22%)
+    → Rejsetid: 7.0 min (78%)
+
+Syddanmark - B-prioritet:
+  Analyseret: 163,453 kørsler (af 163,591 total)
+  Total ventetid (median): 14.0 min
+    → Dispatch delay: 3.0 min (21%)
+    → Rejsetid: 11.0 min (79%)
+
+============================================================
+
+KONKLUSION:
+A-prioritet: Dispatch delay udgør ca. 22% af total ventetid,
+             Rejsetid udgør ca. 76%
+B-prioritet: Dispatch delay udgør ca. 19% af total ventetid,
+             Rejsetid udgør ca. 76%
+
+Dette viser hvor stor andel af borgerens ventetid der skyldes
+system-delay (triage + dispatch) vs. faktisk transporttid.

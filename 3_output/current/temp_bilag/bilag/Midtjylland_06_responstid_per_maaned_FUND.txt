@@ -1,0 +1,7 @@
+TIDSMÆSSIGE ANALYSER - SÆSONVARIATION
+Region: Midtjylland
+A+B-kørsler analyseret: 359,349
+
+Bedste måned: Juli (11.8 min)
+Værste måned: Juni (12.4 min)
+Variation: 5.1%

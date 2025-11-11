@@ -62,6 +62,7 @@ from analyzers.b_priority_analysis import (
     analyze_b_to_a_escalations
 )
 from analyzers.dispatch_delay_analysis import run_dispatch_delay_analysis
+from analyzers.helicopter_analysis import run_helicopter_analysis
 from scripts.organize_output import organize_output
 
 
@@ -583,8 +584,36 @@ def main():
             print("   ⚠ System analyses had errors (check log)")
             logger.warning("System analyses completed with errors")
 
-        # Step 7: Run B-priority deep analyses
-        print("\n[7/12] Running B-priority deep analyses...")
+        # Step 7: Run helicopter (HEMS) analysis
+        print("\n[7/13] Running helicopter (HEMS) analysis...")
+        print("   → National overview (dispatch delay + flight time)")
+        print("   → Regional breakdown and base performance")
+        print("   → Yearly trends and seasonal patterns")
+        print("   → Postal code coverage mapping")
+
+        helicopter_file = Path('1_input/helikopterdata_nationale_.xlsx')
+
+        if helicopter_file.exists():
+            try:
+                helicopter_results = run_helicopter_analysis(
+                    str(helicopter_file),
+                    str(output_dir)
+                )
+                print(f"   ✓ Helicopter analysis completed: {helicopter_results['metadata']['valid_count']:,} cases")
+                print(f"      Avg total response: {helicopter_results['national'].iloc[2]['Gennemsnit_min']:.1f} min")
+                print(f"      Avg dispatch delay: {helicopter_results['national'].iloc[0]['Gennemsnit_min']:.1f} min")
+                print(f"      Regions: {helicopter_results['metadata']['regions']}, Bases: {helicopter_results['metadata']['bases']}")
+                stats['analyses'].append('helicopter_analysis')
+                logger.info("Helicopter analysis completed successfully")
+            except Exception as e:
+                logger.error(f"Helicopter analysis failed: {e}", exc_info=True)
+                print(f"   ⚠ Helicopter analysis failed: {e}")
+        else:
+            logger.warning(f"Helicopter data file not found: {helicopter_file}")
+            print(f"   → Skipping (file not found: {helicopter_file.name})")
+
+        # Step 8: Run B-priority deep analyses
+        print("\n[8/13] Running B-priority deep analyses...")
         print("   → Geographic hotspots (postnummer-niveau)")
         print("   → Temporal patterns (time-of-day + seasonal)")
         print("   → Yearly trends (2021-2025)")
@@ -652,8 +681,8 @@ def main():
             logger.error(f"B-priority analyses failed: {e}", exc_info=True)
             print(f"   ⚠ B-priority analyses had errors: {e}")
 
-        # Step 8: Run dispatch delay vs travel time analysis
-        print("\n[8/12] Running dispatch delay vs. travel time analysis...")
+        # Step 9: Run dispatch delay vs travel time analysis
+        print("\n[9/13] Running dispatch delay vs. travel time analysis...")
         print("   → Analyzing total patient wait time breakdown")
         print("   → Dispatch delay (112 call → dispatch) vs. travel time (dispatch → arrival)")
         print("   → Only Nordjylland + Syddanmark (datetime timestamps)")
@@ -668,8 +697,8 @@ def main():
             logger.error(f"Dispatch delay analysis failed: {e}", exc_info=True)
             print(f"   ⚠ Dispatch delay analysis failed: {e}")
 
-        # Step 9: Run yearly analysis (year-by-region breakdown)
-        print("\n[9/12] Running yearly analysis...")
+        # Step 10: Run yearly analysis (year-by-region breakdown)
+        print("\n[10/13] Running yearly analysis...")
         print("   → Analyzing response times per year and region")
         print("   → Generating landsdækkende årlige gennemsnit")
 
@@ -682,8 +711,8 @@ def main():
             print(f"   ⚠ Yearly analysis failed: {e}")
             logger.error(f"Yearly analysis failed: {e}", exc_info=True)
 
-        # Step 9: Generate master findings report
-        print("\n[10/12] Generating master findings report...")
+        # Step 11: Generate master findings report
+        print("\n[11/13] Generating master findings report...")
         print("   → Combining all analyses (postnummer + årlig + temporal + system + B-priority)")
 
         try:
@@ -702,8 +731,8 @@ def main():
         print(f"\nOutput files saved to: {output_dir.absolute()}")
         print()
 
-        # Step 10: Organize output files
-        print("\n[11/12] Organizing output files...")
+        # Step 12: Organize output files
+        print("\n[12/13] Organizing output files...")
         print("   → Packing all analysis files into bilag.zip")
         print("   → Keeping only MASTER_FINDINGS_RAPPORT files + bilag.zip in /current")
 
@@ -719,8 +748,8 @@ def main():
             print(f"   ⚠ Output organization failed: {e}")
             print(f"   → Run manually: python3 scripts/organize_output.py")
 
-        # Step 11: Generate PDF version
-        print("\n[12/12] Generating PDF version of master report...")
+        # Step 13: Generate PDF version
+        print("\n[13/13] Generating PDF version of master report...")
         print("   → Converting Markdown → HTML → PDF (via Chrome headless)")
         print("   → Applying professional styling with readable tables")
 

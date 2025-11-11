@@ -1,0 +1,7 @@
+TIDSMÆSSIGE ANALYSER - TID-PÅ-DØGNET
+Region: Hovedstaden
+A+B-kørsler analyseret: 493,785
+
+Bedste time: kl. 08:00 (12.2 min)
+Værste time: kl. 23:00 (14.9 min)
+Variation: 22.1%

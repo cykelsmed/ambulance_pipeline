@@ -1,0 +1,7 @@
+TIDSMÆSSIGE ANALYSER - TID-PÅ-DØGNET
+Region: Sjælland
+A+B-kørsler analyseret: 315,035
+
+Bedste time: kl. 08:00 (11.7 min)
+Værste time: kl. 06:00 (13.2 min)
+Variation: 12.8%

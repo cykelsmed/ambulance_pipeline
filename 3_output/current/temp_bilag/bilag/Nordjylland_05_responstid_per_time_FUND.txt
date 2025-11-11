@@ -1,0 +1,7 @@
+TIDSMÆSSIGE ANALYSER - TID-PÅ-DØGNET
+Region: Nordjylland
+A+B-kørsler analyseret: 181,088
+
+Bedste time: kl. 08:00 (12.3 min)
+Værste time: kl. 06:00 (16.1 min)
+Variation: 30.9%

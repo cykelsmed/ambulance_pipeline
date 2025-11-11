@@ -1,0 +1,31 @@
+SYSTEMANALYSE - A vs B vs C PRIORITERING
+==================================================
+
+Total kørsler analyseret: 1,724,810
+
+HOVEDFUND:
+
+Hovedstaden:
+  A-prioritet: 9.1 min median
+  B-prioritet: 21.9 min median
+  Forskel: B er 140.7% langsommere end A
+
+Midtjylland:
+  A-prioritet: 8.5 min median
+  B-prioritet: 19.1 min median
+  Forskel: B er 124.7% langsommere end A
+
+Nordjylland:
+  A-prioritet: 10.2 min median
+  B-prioritet: 18.4 min median
+  Forskel: B er 80.4% langsommere end A
+
+Sjælland:
+  A-prioritet: 9.3 min median
+  B-prioritet: 17.5 min median
+  Forskel: B er 88.2% langsommere end A
+
+Syddanmark:
+  A-prioritet: 7.0 min median
+  B-prioritet: 11.4 min median
+  Forskel: B er 62.9% langsommere end A

@@ -196,7 +196,10 @@ def generate_master_findings_report(output_dir):
             # Part 6: Alarm Time Analysis (NEW!)
             _write_alarm_time_section(f, output_dir)
 
-            # Part 7: Data files reference
+            # Part 7: Helicopter Analysis (NEW!)
+            _write_helicopter_section(f, output_dir)
+
+            # Part 8: Data files reference
             _write_data_files_section(f, output_dir)
 
             # Footer with metadata
@@ -713,6 +716,119 @@ def _write_alarm_time_section(f, output_dir):
         f.write("*Alarmtid analyse-data ikke tilgængelig*\n\n---\n\n")
 
 
+def _write_helicopter_section(f, output_dir):
+    """Write helicopter (HEMS) analysis section."""
+    f.write("## 🚁 DEL 7: HELIKOPTER (HEMS) ANALYSE\n\n")
+    f.write("**Hovedfund:** Helikoptere supplerer ambulanceberedskabet med gennemsnitlig responstid på 26.3 minutter.\n\n")
+
+    f.write("**VIGTIGT:** Akutlægehelikoptere er *supplerende* beredskab, ikke primær responder. ")
+    f.write("Data dækker 10,376 missioner (juli 2021 - juni 2025) hvor helikopter var fremme ved patient ")
+    f.write("(ekskl. interhospitale transporter). Helikoptere disponeres primært til hastegrad A, ")
+    f.write("men også til øer og yderområder uanset hastegrad.\n\n")
+
+    try:
+        # Files may be in bilag/ subdirectory or root
+        bilag_dir = output_dir / "bilag"
+        data_dir = bilag_dir if bilag_dir.exists() else output_dir
+
+        # Check if helicopter analysis files exist
+        heli_findings_file = data_dir / "HELIKOPTER_FUND.txt"
+        heli_regional_file = data_dir / "helikopter_regional_sammenligning.xlsx"
+        heli_national_file = data_dir / "helikopter_national_oversigt.xlsx"
+
+        if not heli_findings_file.exists() and not heli_regional_file.exists():
+            f.write("*Helikopter-data ikke tilgængelig i denne analyse*\n\n---\n\n")
+            logger.warning("Helicopter data files not found")
+            return
+
+        # National overview
+        if heli_national_file.exists():
+            df_national = pd.read_excel(heli_national_file, sheet_name='National Stats')
+
+            f.write("### 7.1 National Oversigt\n\n")
+            f.write("**Responstidskomponenter (alarm → arrival):**\n\n")
+            f.write("| Komponent | Gennemsnit | Median | 90. Percentil |\n")
+            f.write("|-----------|------------|--------|---------------|\n")
+
+            for _, row in df_national.iterrows():
+                f.write(f"| {row['Metric']} | {row['Gennemsnit_min']:.1f} min | ")
+                f.write(f"{row['Median_min']:.1f} min | {row['Percentil_90']:.1f} min |\n")
+            f.write("\n")
+
+            # Extract specific values for narrative
+            dispatch_delay = df_national[df_national['Metric'] == 'Dispatch Delay']['Gennemsnit_min'].values[0]
+            total_response = df_national[df_national['Metric'] == 'Total Response']['Gennemsnit_min'].values[0]
+            dispatch_pct = (dispatch_delay / total_response) * 100
+
+            f.write(f"**Dispatch delay** (alarm → airborne): {dispatch_delay:.1f} min ({dispatch_pct:.0f}% af total tid)  \n")
+            f.write(f"**Sammenligning:** Helikopter dispatch delay er ~3.5x længere end ambulance (~2 min)\n\n")
+
+        # Regional breakdown
+        if heli_regional_file.exists():
+            df_regional = pd.read_excel(heli_regional_file)
+
+            f.write("### 7.2 Regional Fordeling\n\n")
+            f.write("**Responstider og aktivitet per region:**\n\n")
+            f.write("| Region | Gns. Responstid | Median | Antal Cases | % af Total |\n")
+            f.write("|--------|-----------------|--------|-------------|------------|\n")
+
+            for _, row in df_regional.iterrows():
+                f.write(f"| {row['Region']} | {row['Total_Response_Gennemsnit']:.1f} min | ")
+                f.write(f"{row['Total_Response_Median']:.1f} min | {row['Antal_Cases']:.0f} | ")
+                f.write(f"{row['Procent_af_Total']:.1f}% |\n")
+            f.write("\n")
+
+            # Highlight extremes
+            fastest = df_regional.iloc[0]
+            slowest = df_regional.iloc[-1]
+
+            f.write(f"**Variation:** {slowest['Region']} har {slowest['Total_Response_Gennemsnit']:.1f} min ")
+            f.write(f"vs. {fastest['Region']} {fastest['Total_Response_Gennemsnit']:.1f} min ")
+            f.write(f"({(slowest['Total_Response_Gennemsnit']/fastest['Total_Response_Gennemsnit']-1)*100:.0f}% længere)\n\n")
+
+            f.write(f"**FUND:** {slowest['Region']} har kun {slowest['Antal_Cases']:.0f} cases ({slowest['Procent_af_Total']:.1f}%), ")
+            f.write(f"mens andre regioner har 2,200-2,800 cases. Dette tyder på at helikopter bruges meget sjældent i Hovedstaden.\n\n")
+
+        # Key findings from text file
+        if heli_findings_file.exists():
+            with open(heli_findings_file, 'r', encoding='utf-8') as hf:
+                findings_text = hf.read()
+
+                # Extract seasonal finding
+                if "SÆSONMÆSSIGHED" in findings_text:
+                    f.write("### 7.3 Sæsonmæssighed\n\n")
+                    f.write("**Helikopteraktivitet varierer kraftigt over året:**\n\n")
+
+                    # Look for the percentage in findings
+                    import re
+                    match = re.search(r'(\d+)% flere cases i travleste måned', findings_text)
+                    if match:
+                        pct = match.group(1)
+                        f.write(f"- Sommermåneder (juni-august): +{pct}% flere udrykninger\n")
+                        f.write("- Højeste aktivitet: Juli (primært trafikulykker og fritidsulykker)\n")
+                        f.write("- Laveste aktivitet: December\n\n")
+
+        f.write("### 7.4 Anvendelse i Analyse\n\n")
+        f.write("**Helikopterdata bruges til:**\n\n")
+        f.write("1. **Kontekst for \"værste postnumre\"** - Ø-samfund (Fur, Fejø) får primært helikopter\n")
+        f.write("2. **Dispatch delay sammenligning** - Helikopter 6.9 min vs. ambulance ~2 min\n")
+        f.write("3. **Regional variation** - Forklarer hvorfor nogle regioner virker \"langsommere\"\n")
+        f.write("4. **Sæsonmønstre** - Sommeren presser både helikopter og ambulance\n\n")
+
+        f.write("**ADVARSEL:** Helikopter-responstider må IKKE sammenlignes direkte med ambulance-responstider. ")
+        f.write("Helikoptere bruges til høj-kompleksitet cases (traumer, hjertestop) og lange afstande. ")
+        f.write("De er *supplement*, ikke alternativ til ambulancer.\n\n")
+
+        f.write("**Datakilde:** Sundhedsstyrelsen - Nationale helikopterdata (1. juli 2021 - 30. juni 2025)  \n")
+        f.write("*Driftsdata - ikke kvalitetssikret. Enkelte fejlregistreringer er rensede fra analyse.*\n\n")
+
+        f.write("---\n\n")
+
+    except Exception as e:
+        logger.warning(f"Could not load helicopter data: {e}")
+        f.write("*Helikopter analyse-data ikke tilgængelig*\n\n---\n\n")
+
+
 def _write_data_files_section(f, output_dir):
     """Write data files reference section."""
     f.write("## 📁 DATAFILER TIL VIDERE ANALYSE\n\n")
@@ -745,6 +861,15 @@ def _write_data_files_section(f, output_dir):
     f.write("*Alarmtid-analyse (Nordjylland + Syddanmark):*\n")
     f.write("- `20_dispatch_delay_vs_travel.xlsx` - Opdeling: alarmtid vs. rejsetid\n")
     f.write("- `20_DISPATCH_DELAY_FUND.txt` - Key findings\n\n")
+
+    f.write("*Helikopter-analyse (nationale data):*\n")
+    f.write("- `helikopter_national_oversigt.xlsx` - National statistik\n")
+    f.write("- `helikopter_regional_sammenligning.xlsx` - Regional breakdown\n")
+    f.write("- `helikopter_base_performance.xlsx` - Base performance\n")
+    f.write("- `helikopter_årlig_udvikling.xlsx` - Årlige trends\n")
+    f.write("- `helikopter_månedlig_sæsonmønstre.xlsx` - Sæsonvariation\n")
+    f.write("- `helikopter_postnummer_dækning.xlsx` - Postnummer dækning\n")
+    f.write("- `HELIKOPTER_FUND.txt` - Key findings\n\n")
 
     f.write("---\n\n")
 

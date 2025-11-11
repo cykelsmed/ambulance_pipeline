@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-11-10T10:48:37.693554",
+  "version": "1.0",
+  "regions_processed": [
+    "Hovedstaden",
+    "Midtjylland",
+    "Nordjylland",
+    "Sjælland",
+    "Syddanmark"
+  ],
+  "total_postnumre": 1095,
+  "total_ture": 874554,
+  "analyses_generated": [
+    "alle_postnumre",
+    "top_10_værste",
+    "top_10_bedste",
+    "regional_sammenligning",
+    "datawrapper_csv"
+  ]
+}

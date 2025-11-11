@@ -1,0 +1,28 @@
+Region,Rekvireringskanal,Median_minutter,Antal_ture
+Hovedstaden,112,8.6,156849
+Hovedstaden,1813,11.8,56891
+Hovedstaden,CVI,6.5,3570
+Hovedstaden,Øvrige,7.2,20048
+Midtjylland,112,8.6,112243
+Midtjylland,Andet,6.8,95
+Midtjylland,Hospital,9.1,309
+Midtjylland,Praktiserende læge,8.2,35422
+Midtjylland,Vagtlæge/LVN,8.7,39462
+Nordjylland,-,17.1,17
+Nordjylland,Alarm112,10.4,76509
+Nordjylland,Hospital,9.2,333
+Nordjylland,Læge,7.5,3091
+Nordjylland,Lægevagt,8.6,2430
+Nordjylland,Plejehjem,9.5,61
+Nordjylland,Øvrige,7.9,2622
+Sjælland,112,9.7,105977
+Sjælland,Andre,8.8,33433
+Sjælland,Lægevagt,8.1,23145
+Sjælland,Sygehus,7.8,934
+Syddanmark,112,6.9,146532
+Syddanmark,Andre,6.3,501
+Syddanmark,Hjemmepleje,7.4,32
+Syddanmark,Lægefaglig visitator,7.3,2890
+Syddanmark,Praktiserende læge,6.9,19286
+Syddanmark,Sygehus,7.0,2033
+Syddanmark,Vagtlæge,7.3,31620
