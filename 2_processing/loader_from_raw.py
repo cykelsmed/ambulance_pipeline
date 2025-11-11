@@ -154,7 +154,25 @@ def load_all_regions_from_raw(config: Dict[str, Any], regional_data_cache: Dict 
     # Combine all regions
     combined = pd.concat(all_regions, ignore_index=True)
 
-    logger.info(f"✓ Loaded {len(combined)} postal codes from {len(all_regions)} regions (raw data)")
+    # Log before duplicate handling
+    initial_count = len(combined)
+    logger.info(f"✓ Loaded {initial_count} postal codes from {len(all_regions)} regions (raw data)")
+
+    # Handle duplicate postal codes (e.g., 9500 exists in both Nordjylland and Midtjylland)
+    # Keep the version with the most trips (largest Antal_ture)
+    duplicates = combined[combined.duplicated(subset=['Postnummer'], keep=False)]
+    if len(duplicates) > 0:
+        unique_duplicates = duplicates['Postnummer'].nunique()
+        logger.info(f"  Found {len(duplicates)} rows with {unique_duplicates} duplicate postal codes")
+        logger.info(f"  Resolving duplicates by keeping version with most trips...")
+
+        # Sort by Antal_ture (descending) and keep first occurrence of each Postnummer
+        combined = combined.sort_values('Antal_ture', ascending=False)
+        combined = combined.drop_duplicates(subset=['Postnummer'], keep='first')
+
+        removed_count = initial_count - len(combined)
+        logger.info(f"  Removed {removed_count} duplicate entries, kept {len(combined)} unique postal codes")
+
     logger.info(f"  Total A-priority cases: {combined['Antal_ture'].sum():,}")
 
     return combined
