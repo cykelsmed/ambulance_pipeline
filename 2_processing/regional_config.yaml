@@ -11,6 +11,7 @@ regions:
       priority: "Hastegrad ved oprettelse"
       month: "Måned"
       requesting_channel: "Rekvireringskanal"
+      vehicle_type: "Enhedstype for første ankomne professionelle præhospitale enhed"
     month_type: numeric  # 1-12
     notes: "Baseline region - 100% data coverage"
 
@@ -23,6 +24,7 @@ regions:
       priority: "Forste_respons"
       month: "Maaned"
       requesting_channel: "Rekvirent"
+      vehicle_type: "Enhedstype"
     month_type: danish  # Needs conversion: "Januar" → 1
     notes: "Requires month name conversion from Danish to numeric"
 
@@ -35,6 +37,7 @@ regions:
       priority: "Hastegrad ved visitering"
       month: "Måned"
       requesting_channel: "Rekvireringskanal"
+      vehicle_type: "Første enhed fremme"
     month_type: numeric  # 1-12
     notes: "100% data coverage"
 
@@ -47,6 +50,7 @@ regions:
       priority: "Respons"
       month: "Måned_HændelseOprettet"
       requesting_channel: "Rekvirent"
+      vehicle_type: "Ressourcetype_FørsteAnkomst"
     month_type: numeric  # 1-12
     notes: "100% data coverage"
 
@@ -59,6 +63,7 @@ regions:
       priority: "Hastegrad ved oprettelse"
       month: "Måned"
       requesting_channel: "Rekvirent"
+      vehicle_type: "Enhedstype for første disponerede"
     month_type: numeric  # 1-12
     notes: "58.3% data coverage - response time column has empty strings that need filtering"
 

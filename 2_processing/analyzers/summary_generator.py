@@ -199,7 +199,10 @@ def generate_master_findings_report(output_dir):
             # Part 7: Helicopter Analysis (NEW!)
             _write_helicopter_section(f, output_dir)
 
-            # Part 8: Data files reference
+            # Part 8: Vehicle Type Analysis (NEW!)
+            _write_vehicle_type_section(f, output_dir)
+
+            # Part 9: Data files reference
             _write_data_files_section(f, output_dir)
 
             # Footer with metadata
@@ -829,6 +832,105 @@ def _write_helicopter_section(f, output_dir):
         f.write("*Helikopter analyse-data ikke tilgængelig*\n\n---\n\n")
 
 
+def _write_vehicle_type_section(f, output_dir):
+    """Write vehicle type analysis section."""
+    f.write("## 🚑 DEL 8: KØRETØJSTYPE-ANALYSE\n\n")
+    f.write("**Hovedfund:** Ambulancer dominerer med 93% af alle akutte udkald, ")
+    f.write("men lægebiler har længere responstider end standardambulancer.\n\n")
+
+    try:
+        # Files may be in bilag/ subdirectory or root
+        bilag_dir = output_dir / "bilag"
+        data_dir = bilag_dir if bilag_dir.exists() else output_dir
+
+        # Check if vehicle type analysis files exist
+        national_file = data_dir / "vehicle_type_national_distribution.xlsx"
+        regional_file = data_dir / "vehicle_type_regional_variation.xlsx"
+        priority_file = data_dir / "vehicle_type_priority_differences.xlsx"
+
+        if not national_file.exists():
+            f.write("*Køretøjstype-data ikke tilgængelig i denne analyse*\n\n---\n\n")
+            logger.warning("Vehicle type data files not found")
+            return
+
+        # National distribution
+        df_national = pd.read_excel(national_file)
+
+        f.write("### 8.1 National Fordeling (Landsdækkende)\n\n")
+        f.write("**Køretøjstyper ved A+B prioritet (4 regioner):**\n\n")
+        f.write("| Køretøjstype | Antal Cases | % af Total | Median Responstid |\n")
+        f.write("|--------------|-------------|------------|-------------------|\n")
+
+        for _, row in df_national.iterrows():
+            f.write(f"| {row['Vehicle_Type']} | {row['Total_Cases']:,.0f} | ")
+            f.write(f"{row['Percentage']:.1f}% | {row['Median_Response']:.1f} min |\n")
+        f.write("\n")
+
+        # Extract key stats
+        ambulance_row = df_national[df_national['Vehicle_Type'] == 'Ambulance'].iloc[0]
+        laegebil_row = df_national[df_national['Vehicle_Type'] == 'Lægebil'].iloc[0]
+
+        f.write(f"**Nøgletal:**\n")
+        f.write(f"- Ambulance er den absolut dominerende enhedstype ({ambulance_row['Percentage']:.1f}%)\n")
+        f.write(f"- Lægebiler bruges i {laegebil_row['Percentage']:.1f}% af tilfældene ({laegebil_row['Total_Cases']:,.0f} cases)\n")
+        f.write(f"- Lægebiler har **{laegebil_row['Median_Response'] - ambulance_row['Median_Response']:.1f} min længere** ")
+        f.write(f"median responstid end standardambulancer ({laegebil_row['Median_Response']:.1f} vs {ambulance_row['Median_Response']:.1f} min)\n\n")
+
+        # Regional variation (if available)
+        if regional_file.exists():
+            df_regional = pd.read_excel(regional_file)
+
+            f.write("### 8.2 Regional Variation i Køretøjsbrug\n\n")
+            f.write("**Procentvis fordeling af køretøjstyper per region:**\n\n")
+            f.write("| Region | Ambulance | Lægebil | Paramediciner | Andre |\n")
+            f.write("|--------|-----------|---------|---------------|-------|\n")
+
+            for _, row in df_regional.iterrows():
+                f.write(f"| {row['Region']} | {row['Ambulance_Pct']:.1f}% | ")
+                f.write(f"{row['Laegebil_Pct']:.1f}% | {row['Paramediciner_Pct']:.1f}% | ")
+                f.write(f"{row['Andre_Pct']:.1f}% |\n")
+            f.write("\n")
+
+            # Find extremes
+            max_laegebil_region = df_regional.loc[df_regional['Laegebil_Pct'].idxmax()]
+            min_laegebil_region = df_regional.loc[df_regional['Laegebil_Pct'].idxmin()]
+
+            f.write(f"**Regional forskel:** {max_laegebil_region['Region']} bruger mest lægebil ")
+            f.write(f"({max_laegebil_region['Laegebil_Pct']:.1f}%), mens {min_laegebil_region['Region']} ")
+            f.write(f"bruger mindst ({min_laegebil_region['Laegebil_Pct']:.1f}%)\n\n")
+
+        # Priority differences (if available)
+        if priority_file.exists():
+            df_priority = pd.read_excel(priority_file)
+
+            f.write("### 8.3 Køretøjstype per Prioritet\n\n")
+            f.write("**Responstider fordelt på køretøjstype og prioritet:**\n\n")
+            f.write("| Prioritet | Køretøjstype | Median Responstid | Antal Cases |\n")
+            f.write("|-----------|--------------|-------------------|-------------|\n")
+
+            for _, row in df_priority.iterrows():
+                f.write(f"| {row['Priority']} | {row['Vehicle_Type']} | ")
+                f.write(f"{row['Median_Response']:.1f} min | {row['Total_Cases']:,.0f} |\n")
+            f.write("\n")
+
+            # A vs B comparison for Ambulance
+            amb_a = df_priority[(df_priority['Vehicle_Type'] == 'Ambulance') & (df_priority['Priority'] == 'A')]
+            amb_b = df_priority[(df_priority['Vehicle_Type'] == 'Ambulance') & (df_priority['Priority'] == 'B')]
+
+            if not amb_a.empty and not amb_b.empty:
+                diff = amb_b.iloc[0]['Median_Response'] - amb_a.iloc[0]['Median_Response']
+                pct_diff = (diff / amb_a.iloc[0]['Median_Response']) * 100
+                f.write(f"**Prioritetsforskel:** Ambulancer til B-prioritet har {diff:.1f} min længere ")
+                f.write(f"responstid end A-prioritet (+{pct_diff:.0f}%)\n\n")
+
+        f.write("**Datadækning:** Analysen dækker 4 ud af 5 regioner (Sjælland mangler køretøjstype-data)\n\n")
+        f.write("---\n\n")
+
+    except Exception as e:
+        logger.warning(f"Could not load vehicle type data: {e}")
+        f.write("*Køretøjstype analyse-data ikke tilgængelig*\n\n---\n\n")
+
+
 def _write_data_files_section(f, output_dir):
     """Write data files reference section."""
     f.write("## 📁 DATAFILER TIL VIDERE ANALYSE\n\n")
@@ -870,6 +972,14 @@ def _write_data_files_section(f, output_dir):
     f.write("- `helikopter_månedlig_sæsonmønstre.xlsx` - Sæsonvariation\n")
     f.write("- `helikopter_postnummer_dækning.xlsx` - Postnummer dækning\n")
     f.write("- `HELIKOPTER_FUND.txt` - Key findings\n\n")
+
+    f.write("*Køretøjstype-analyse (4 regioner):*\n")
+    f.write("- `vehicle_type_national_distribution.xlsx` - National fordeling\n")
+    f.write("- `vehicle_type_regional_variation.xlsx` - Regional variation\n")
+    f.write("- `vehicle_type_priority_differences.xlsx` - A vs B prioritet\n")
+    f.write("- `vehicle_type_temporal_patterns.xlsx` - Tidsmæssige mønstre\n")
+    f.write("- `VEHICLE_TYPE_SUMMARY.txt` - Key findings\n")
+    f.write("- `DATAWRAPPER_vehicle_type.csv` - Visualization data\n\n")
 
     f.write("---\n\n")
 

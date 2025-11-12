@@ -63,6 +63,7 @@ from analyzers.b_priority_analysis import (
 )
 from analyzers.dispatch_delay_analysis import run_dispatch_delay_analysis
 from analyzers.helicopter_analysis import run_helicopter_analysis
+from analyzers.vehicle_type_analysis import run_vehicle_type_analysis
 from scripts.organize_output import organize_output
 
 
@@ -681,8 +682,38 @@ def main():
             logger.error(f"B-priority analyses failed: {e}", exc_info=True)
             print(f"   ⚠ B-priority analyses had errors: {e}")
 
+        # Step 8.5: Run vehicle type analysis (uses same regional_data_cache if available)
+        print("\n[8.5/14] Running vehicle type analysis...")
+        print("   → National distribution (Ambulance vs. Lægebil vs. Paramediciner)")
+        print("   → Regional variation in vehicle usage")
+        print("   → Priority differences (A vs B per vehicle type)")
+        print("   → Temporal patterns (time-of-day per vehicle type)")
+
+        try:
+            # Re-use regional_data_cache if available from B-priority step
+            if 'regional_data_cache' in locals() and regional_data_cache:
+                print("   → Re-using regional data cache from B-priority analysis")
+                vehicle_results, vehicle_summary = run_vehicle_type_analysis(output_dir, regional_data_cache=regional_data_cache)
+            else:
+                # Load cache if not available
+                print("   → Loading regional data cache...")
+                from data_cache import load_all_regional_data_once
+                vehicle_cache = load_all_regional_data_once()
+                vehicle_results, vehicle_summary = run_vehicle_type_analysis(output_dir, regional_data_cache=vehicle_cache)
+                del vehicle_cache
+
+            print(f"   ✓ Vehicle type analysis completed")
+            print(f"      Total analyzed: {vehicle_results['national'].iloc[0]['Total_Cases']:,} A+B cases")
+            print(f"      Ambulance: {vehicle_results['national'].iloc[0]['Percentage']}% ({vehicle_results['national'].iloc[0]['Total_Cases']:,} cases)")
+            print(f"      Lægebil: {vehicle_results['national'].iloc[1]['Percentage']}% ({vehicle_results['national'].iloc[1]['Total_Cases']:,} cases)")
+            stats['analyses'].append('vehicle_type_analysis')
+            logger.info("Vehicle type analysis completed successfully")
+        except Exception as e:
+            logger.error(f"Vehicle type analysis failed: {e}", exc_info=True)
+            print(f"   ⚠ Vehicle type analysis failed: {e}")
+
         # Step 9: Run dispatch delay vs travel time analysis
-        print("\n[9/13] Running dispatch delay vs. travel time analysis...")
+        print("\n[9/14] Running dispatch delay vs. travel time analysis...")
         print("   → Analyzing total patient wait time breakdown")
         print("   → Dispatch delay (112 call → dispatch) vs. travel time (dispatch → arrival)")
         print("   → Only Nordjylland + Syddanmark (datetime timestamps)")
