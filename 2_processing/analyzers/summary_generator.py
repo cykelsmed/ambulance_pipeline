@@ -196,10 +196,10 @@ def generate_master_findings_report(output_dir):
             # Part 6: Alarm Time Analysis (NEW!)
             _write_alarm_time_section(f, output_dir)
 
-            # Part 7: Helicopter Analysis (NEW!)
-            _write_helicopter_section(f, output_dir)
+            # Part 7: Helicopter Analysis - MOVED TO SEPARATE REPORT
+            # _write_helicopter_section(f, output_dir)
 
-            # Part 8: Vehicle Type Analysis (NEW!)
+            # Part 7: Vehicle Type Analysis (Renumbered from Part 8)
             _write_vehicle_type_section(f, output_dir)
 
             # Part 9: Data files reference
@@ -834,7 +834,7 @@ def _write_helicopter_section(f, output_dir):
 
 def _write_vehicle_type_section(f, output_dir):
     """Write vehicle type analysis section."""
-    f.write("## 🚑 DEL 8: KØRETØJSTYPE-ANALYSE\n\n")
+    f.write("## 🚑 DEL 7: KØRETØJSTYPE-ANALYSE\n\n")
     f.write("**Hovedfund:** Ambulancer dominerer med 93% af alle akutte udkald, ")
     f.write("men lægebiler har længere responstider end standardambulancer.\n\n")
 
@@ -965,13 +965,8 @@ def _write_data_files_section(f, output_dir):
     f.write("- `20_DISPATCH_DELAY_FUND.txt` - Key findings\n\n")
 
     f.write("*Helikopter-analyse (nationale data):*\n")
-    f.write("- `helikopter_national_oversigt.xlsx` - National statistik\n")
-    f.write("- `helikopter_regional_sammenligning.xlsx` - Regional breakdown\n")
-    f.write("- `helikopter_base_performance.xlsx` - Base performance\n")
-    f.write("- `helikopter_årlig_udvikling.xlsx` - Årlige trends\n")
-    f.write("- `helikopter_månedlig_sæsonmønstre.xlsx` - Sæsonvariation\n")
-    f.write("- `helikopter_postnummer_dækning.xlsx` - Postnummer dækning\n")
-    f.write("- `HELIKOPTER_FUND.txt` - Key findings\n\n")
+    f.write("- **Se separat rapport:** `HELIKOPTER_DATA_RAPPORT.md`\n")
+    f.write("- Helikopter-data og -filer findes i bilag.zip\n\n")
 
     f.write("*Køretøjstype-analyse (4 regioner):*\n")
     f.write("- `vehicle_type_national_distribution.xlsx` - National fordeling\n")
@@ -1172,4 +1167,62 @@ def generate_master_findings_pdf(output_dir):
         return None
     except Exception as e:
         logger.error(f"Failed to generate report: {e}", exc_info=True)
+        return None
+
+
+def generate_helicopter_report(output_dir):
+    """Generate separate helicopter (HEMS) analysis report.
+
+    Args:
+        output_dir: Path to output directory containing helicopter analysis files
+
+    Returns:
+        Path: Path to generated report
+    """
+    output_dir = Path(output_dir)
+    report_path = output_dir / "HELIKOPTER_DATA_RAPPORT.md"
+
+    logger.info("Generating separate helicopter report...")
+
+    try:
+        with open(report_path, 'w', encoding='utf-8') as f:
+            # Header
+            f.write("# HELIKOPTER (HEMS) DATA RAPPORT\n")
+            f.write("## Analyse af Akutlægehelikopter Responstider i Danmark\n\n")
+            f.write(f"**Genereret:** {datetime.now().strftime('%d. %B %Y kl. %H:%M')}\n")
+            f.write("**Periode:** Juli 2021 - Juni 2025 (4 år)\n")
+            f.write("**Datasæt:** Nationale helikopterdata fra Sundhedsstyrelsen\n\n")
+            f.write("---\n\n")
+
+            # Write helicopter section using existing function
+            _write_helicopter_section(f, output_dir)
+
+            # Data files reference
+            f.write("## 📁 DATAFILER\n\n")
+            f.write("**Genererede analysefiler:**\n\n")
+            f.write("*Helikopter-analyse (nationale data):*\n")
+            f.write("- `helikopter_national_oversigt.xlsx` - National statistik\n")
+            f.write("- `helikopter_regional_sammenligning.xlsx` - Regional breakdown\n")
+            f.write("- `helikopter_base_performance.xlsx` - Base performance\n")
+            f.write("- `helikopter_årlig_udvikling.xlsx` - Årlige trends\n")
+            f.write("- `helikopter_månedlig_sæsonmønstre.xlsx` - Sæsonvariation\n")
+            f.write("- `helikopter_postnummer_dækning.xlsx` - Postnummer dækning\n")
+            f.write("- `HELIKOPTER_FUND.txt` - Key findings\n\n")
+            f.write("---\n\n")
+
+            # Footer
+            f.write(f"**RAPPORT GENERERET: {datetime.now().strftime('%d. %B %Y kl. %H:%M')}**\n\n")
+            f.write("*Genereret automatisk af Ambulance Pipeline*\n\n")
+            f.write("---\n\n")
+            f.write("**Kildekode og dokumentation:** https://github.com/cykelsmed/ambulance_pipeline\n\n")
+            f.write("**Undersøgelsen er lavet af:**  \n")
+            f.write("Kaas og Mulvad Research / Adam Hvidt  \n")
+            f.write("Email: adam@km24  \n")
+            f.write("Telefon: 26366414\n")
+
+        logger.info(f"✓ Helicopter report generated: {report_path.name}")
+        return report_path
+
+    except Exception as e:
+        logger.error(f"Failed to generate helicopter report: {e}", exc_info=True)
         return None

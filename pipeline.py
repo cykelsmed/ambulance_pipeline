@@ -46,7 +46,7 @@ from analyzers.core import (
     analyze_datawrapper_csv
 )
 from analyzers.export import export_all_analyses, save_metadata
-from analyzers.summary_generator import generate_master_findings_report, generate_master_findings_pdf
+from analyzers.summary_generator import generate_master_findings_report, generate_master_findings_pdf, generate_helicopter_report
 from analyzers.priority_analysis import (
     analyze_abc_priority,
     calculate_priority_differences,
@@ -755,6 +755,18 @@ def main():
             print(f"   ⚠ Master rapport fejlede: {e}")
             logger.error(f"Failed to generate master report: {e}", exc_info=True)
 
+        # Generate separate helicopter report
+        print("   → Generating separate helicopter report...")
+        try:
+            helicopter_report = generate_helicopter_report(output_dir)
+            if helicopter_report:
+                print("   ✓ Helikopter rapport genereret (separat fil)")
+                stats['analyses'].append('helicopter_report')
+                logger.info(f"Generated helicopter report: {helicopter_report.name}")
+        except Exception as e:
+            print(f"   ⚠ Helikopter rapport fejlede: {e}")
+            logger.error(f"Failed to generate helicopter report: {e}", exc_info=True)
+
         # Print summary
         print_summary(analyses, stats)
 
@@ -771,7 +783,8 @@ def main():
             organize_output(output_dir, keep_unzipped=False)
             print("   ✓ Output files organized")
             print(f"\n📦 Final output:")
-            print(f"   - MASTER_FINDINGS_RAPPORT.md/.html/.pdf (reports)")
+            print(f"   - MASTER_FINDINGS_RAPPORT.md/.html/.pdf (main report)")
+            print(f"   - HELIKOPTER_DATA_RAPPORT.md (separate helicopter report)")
             print(f"   - bilag.zip (all analysis files)")
             logger.info("Output files organized successfully")
         except Exception as e:
