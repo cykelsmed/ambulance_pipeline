@@ -1,7 +1,0 @@
-TIDSMÆSSIGE ANALYSER - SÆSONVARIATION
-Region: Hovedstaden
-A+B-kørsler analyseret: 493,785
-
-Bedste måned: Juli (13.2 min)
-Værste måned: Juni (13.8 min)
-Variation: 4.5%

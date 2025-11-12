@@ -1,7 +1,0 @@
-TIDSMÆSSIGE ANALYSER - TID-PÅ-DØGNET
-Region: Syddanmark
-A+B-kørsler analyseret: 363,300
-
-Bedste time: kl. 08:00 (8.0 min)
-Værste time: kl. 06:00 (9.2 min)
-Variation: 15.0%

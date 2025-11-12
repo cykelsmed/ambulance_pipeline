@@ -1,7 +1,0 @@
-TIDSMÆSSIGE ANALYSER - SÆSONVARIATION
-Region: Nordjylland
-A+B-kørsler analyseret: 181,088
-
-Bedste måned: Maj (13.1 min)
-Værste måned: December (14.0 min)
-Variation: 6.9%

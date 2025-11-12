@@ -1,7 +1,0 @@
-TIDSMÆSSIGE ANALYSER - TID-PÅ-DØGNET
-Region: Midtjylland
-A+B-kørsler analyseret: 359,349
-
-Bedste time: kl. 08:00 (10.9 min)
-Værste time: kl. 05:00 (12.6 min)
-Variation: 15.6%

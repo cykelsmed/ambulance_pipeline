@@ -1,7 +1,7 @@
 # MASTER FINDINGS RAPPORT
 ## Komplet Analyse af Ambulance Responstider i Danmark
 
-**Genereret:** 11. November 2025 kl. 15:20
+**Genereret:** 12. November 2025 kl. 10:03
 **Periode:** 2021-2025 (5 år)
 **Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling
 
@@ -14,7 +14,7 @@
 **1. "Ambulancen kommer fire gange hurtigere i Esbjerg end i Hobro. Din adresse kan betyde 15 minutters forskel."**  
 *3.9x forskel mellem bedste og værste postnummer*
 
-Værste postnummer (9500 Hobro: 19.8 min) har 3.9x længere responstid end bedste (6705 Esbjerg Ø: 5.1 min). Variationen følger et geografisk mønster med landdistriker langsommere end bycentre.
+Værste postnummer (7884 Fur: 19.8 min) har 3.9x længere responstid end bedste (6705 Esbjerg Ø: 5.1 min). Variationen følger et geografisk mønster med landdistriker langsommere end bycentre.
 
 **2. "Alle regioner når deres servicemål – men Nordjylland er alligevel 45% langsommere end Syddanmark. Rigsrevisionen kritiserer at regionerne bruger forskellige målemetoder."**  
 *3.5 minutters forskel mellem hurtigste og langsomste region*
@@ -60,7 +60,7 @@ Alle regioner undtagen Hovedstaden har værste responstider tidlig morgen (kl. 0
 - **1,543,000+ total kørsler** analyseret (inkl. C-prioritet)
 - **1,724,810 total kørsler** analyseret inkl. rekvireringskanal-data
 - **5 års data** (2021-2025) fra alle 5 danske regioner
-- **1095 postnumre** kortlagt
+- **1074 postnumre** kortlagt
 - **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)
 
 ### ⚠️ Datakvalitet-Note: Helikopter-Data
@@ -87,16 +87,16 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 
 | Rank | Postnummer | Region | Gennemsnit (min) | Antal Ture |
 |------|------------|--------|------------------|------------|
-| 1 | **9500 Hobro** | Midtjylland | 19.8 | 144 |
-| 2 | **7884 Fur** | Midtjylland | 19.8 | 117 |
-| 3 | **8970 Havndal** | Midtjylland | 19.6 | 293 |
-| 4 | **4944 Fejø** | Sjælland | 19.6 | 68 |
-| 5 | **7790 Thyholm** | Midtjylland | 19.0 | 520 |
-| 6 | **5390 Martofte** | Syddanmark | 18.6 | 109 |
-| 7 | **7741 Frøstrup** | Nordjylland | 18.5 | 216 |
-| 8 | **4874 Gedser** | Sjælland | 18.3 | 433 |
-| 9 | **5935 Bagenkop** | Syddanmark | 18.2 | 189 |
-| 10 | **9620 Aalestrup** | Midtjylland | 18.0 | 82 |
+| 1 | **7884 Fur** | Midtjylland | 19.8 | 117 |
+| 2 | **8970 Havndal** | Midtjylland | 19.6 | 293 |
+| 3 | **4944 Fejø** | Sjælland | 19.6 | 68 |
+| 4 | **7790 Thyholm** | Midtjylland | 19.0 | 520 |
+| 5 | **5390 Martofte** | Syddanmark | 18.6 | 109 |
+| 6 | **7741 Frøstrup** | Nordjylland | 18.5 | 216 |
+| 7 | **4874 Gedser** | Sjælland | 18.3 | 433 |
+| 8 | **5935 Bagenkop** | Syddanmark | 18.2 | 189 |
+| 9 | **7990 Øster Assels** | Nordjylland | 17.8 | 150 |
+| 10 | **7540 Haderup** | Midtjylland | 17.8 | 212 |
 
 **Note om øer:** Fur (#2) og Fejø (#4) er øer med kun færgeforbindelse. Responstider inkluderer helikopter-kørsler, men datasættet indeholder ikke oplysning om hvem der var først på skadestedet. Se datakvalitet-note i executive summary.
 
@@ -119,7 +119,7 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 | 9 | **6400 Sønderborg** | Syddanmark | 6.0 | 6,243 |
 | 10 | **6840 Oksbøl** | Syddanmark | 6.1 | 662 |
 
-**Sammenligning:** 9500 Hobro (19.8 min) er **3.9x langsommere** end 6705 Esbjerg Ø (5.1 min). Rigsrevisionens notat (SR 11/2024) påpeger at de regionale servicemål dækker over 'store geografiske forskelle'. Forskellen viser den geografiske forskel mellem landdistriker og bycentre.
+**Sammenligning:** 7884 Fur (19.8 min) er **3.9x langsommere** end 6705 Esbjerg Ø (5.1 min). Rigsrevisionens notat (SR 11/2024) påpeger at de regionale servicemål dækker over 'store geografiske forskelle'. Forskellen viser den geografiske forskel mellem landdistriker og bycentre.
 
 ### 1.3 Regional Sammenligning
 
@@ -127,11 +127,11 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 
 | Region | Gennemsnit (min) | Total Ture | Postnumre |
 |--------|------------------|------------|-----------|
-| **Nordjylland** | 11.3 | 85,063 | 77 |
-| **Sjælland** | 10.4 | 163,489 | 131 |
-| **Hovedstaden** | 10.0 | 235,590 | 572 |
-| **Midtjylland** | 9.6 | 187,519 | 153 |
-| **Syddanmark** | 7.8 | 202,893 | 162 |
+| **Nordjylland** | 11.3 | 85,061 | 75 |
+| **Sjælland** | 10.4 | 163,420 | 129 |
+| **Hovedstaden** | 10.0 | 235,535 | 567 |
+| **Midtjylland** | 9.6 | 187,065 | 144 |
+| **Syddanmark** | 7.8 | 202,877 | 159 |
 
 *Regional median beregnes på case-niveau - se Tabel 2.3 (Årlig Udvikling)*
 
@@ -424,6 +424,14 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 
 ---
 
+## 🚑 DEL 8: KØRETØJSTYPE-ANALYSE
+
+**Hovedfund:** Ambulancer dominerer med 93% af alle akutte udkald, men lægebiler har længere responstider end standardambulancer.
+
+*Køretøjstype-data ikke tilgængelig i denne analyse*
+
+---
+
 ## 📁 DATAFILER TIL VIDERE ANALYSE
 
 **Genererede analysefiler:**
@@ -465,6 +473,14 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 - `helikopter_postnummer_dækning.xlsx` - Postnummer dækning
 - `HELIKOPTER_FUND.txt` - Key findings
 
+*Køretøjstype-analyse (4 regioner):*
+- `vehicle_type_national_distribution.xlsx` - National fordeling
+- `vehicle_type_regional_variation.xlsx` - Regional variation
+- `vehicle_type_priority_differences.xlsx` - A vs B prioritet
+- `vehicle_type_temporal_patterns.xlsx` - Tidsmæssige mønstre
+- `VEHICLE_TYPE_SUMMARY.txt` - Key findings
+- `DATAWRAPPER_vehicle_type.csv` - Visualization data
+
 ---
 
 ## 📋 METODE OG DATAGRUNDLAG
@@ -500,47 +516,9 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 
 **Teknisk note:** Regional median i Tabel 2.3 er beregnet fra individuelle kørsler (statistisk korrekt). Postnummer-aggregering i Tabel 1.3 bruger gennemsnit på postnummer-niveau.
 
-### Vigtigste Metodiske Valg
-
-**1. Datafiltrering:**
-- **Del 1-2 (Postnummer, Årlig):** Kun A-prioritet (livstruende tilfælde)
-- **Del 3 (Tidsmæssig):** A+B prioritet (viser fuld systembelastning)
-- **Del 6 (Alarmtid):** A+B prioritet (begge analyser)
-- **Top 10 postnumre:** Minimum 50 kørsler (statistisk konfidensinterval)
-
-**2. Håndtering af Grænseområder:**
-- **Problem:** 21 postnumre eksisterer i flere regioner (eks. Hobro i både Nordjylland og Midtjylland)
-- **Løsning:** Behold version med flest kørsler
-- **Dominansmønster:** Primær region har gennemsnitlig 96% af kørsler (range: 83-100%)
-- **Impact:** 596 kørsler fjernet (0.07% af data) - statistisk og geografisk validt
-
-**3. Statistiske Metoder:**
-- **Gennemsnit:** Top 10 lister (viser fuld variation)
-- **Median:** Regional sammenligning, tidsmæssige analyser (robust mod outliers)
-- **Weighted average:** Regional gennemsnit vægter postnumre efter antal kørsler
-- **Præcision:** 1 decimal for alle responstider
-
-**4. Tidsdefinitioner:**
-- **Alarmtid:** Tid fra 112-opkald til ambulance sendes afsted (T2-T1)
-- **Rejsetid:** Tid fra dispatch til ankomst (T3-T2)
-- **Total responstid:** Tid fra 112-opkald til ankomst (T3-T1)
-- **Begrænsning:** Alarmtid kun mulig for Nordjylland + Syddanmark (datetime-data)
-
-**5. Regionale Data-Variationer:**
-- Hver region bruger forskellige kolonnenavne (håndteret automatisk)
-- **Syddanmark:** 58.3% data coverage (responstid-kolonne har tomme strenge)
-- **Alarmtid-begrænsning:** 3 ud af 5 regioner bruger time-only format (kan ikke beregne tidsforskel hen over midnat)
-- Andre regioner: 100% coverage
-
-**6. Vigtige Begrænsninger:**
-- **Helikopter:** Regionale data inkluderer helikopter-kørsler uden distinction (påvirker øer som Fur, Fejø)
-- **COVID-19:** Data inkluderer 2021-2022 (lockdowns kan påvirke mønstre)
-- **Korrelation ≠ Kausalitet:** Tidsmæssige mønstre kan ikke isolere enkeltfaktorer (trafik, bemanding, kald-volumen)
-- **5-års aggregering:** Maskerer år-til-år variation (se Del 2 for årlig analyse)
-
 ---
 
-**RAPPORT GENERERET: 11. November 2025 kl. 15:20**
+**RAPPORT GENERERET: 12. November 2025 kl. 10:03**
 
 *Genereret automatisk af Ambulance Pipeline*
 

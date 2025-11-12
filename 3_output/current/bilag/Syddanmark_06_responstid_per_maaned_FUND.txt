@@ -1,7 +1,0 @@
-TIDSMÆSSIGE ANALYSER - SÆSONVARIATION
-Region: Syddanmark
-A+B-kørsler analyseret: 363,300
-
-Bedste måned: April (8.4 min)
-Værste måned: Januar (8.6 min)
-Variation: 2.4%

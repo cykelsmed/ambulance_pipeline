@@ -160,19 +160,13 @@ def generate_master_findings_report(output_dir):
                 f.write(f"- **{len(pd.read_excel(data_dir / '01_alle_postnumre.xlsx'))} postnumre** kortlagt\n")
                 f.write("- **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)\n\n")
 
-                # Add data quality disclaimer about helicopter data
-                f.write("### ⚠️ Datakvalitet-Note: Helikopter-Data\n\n")
-                f.write("**Vigtigt:** Analysen inkluderer alle A-prioritet kørsler i regionernes data, ")
-                f.write("inklusiv kørsler hvor helikopter var den første responder. De regionale datasæt ")
-                f.write("indeholder ikke oplysninger om hvem der var \"først på skadestedet\" (ambulance vs. helikopter). ")
-                f.write("Dette kan påvirke postnummer-statistikkerne for øer og yderområder hvor helikopter ")
-                f.write("ofte indsættes.\n\n")
-                f.write("**Eksempler fra data:**\n")
-                f.write("- Nordjylland: 142 helikopter-kørsler ud af 85,063 A-kørsler (0.17%)\n")
-                f.write("- Øer som Fur (7884) og Fejø (4944) i Top 10 værste kan være påvirket\n\n")
-                f.write("**Konsekvens:** Postnummer-responstider kan være en blanding af ambulance- og ")
-                f.write("helikopter-responstider. For at få det fulde billede bør nationale helikopter-data ")
-                f.write("analyseres separat.\n\n")
+                # Add note about separate helicopter report
+                f.write("### 📝 Note: Helikopter-Analyse\n\n")
+                f.write("**Helikopter-data er analyseret separat:** Se `HELIKOPTER_DATA_RAPPORT.md` for komplet ")
+                f.write("analyse af akutlægehelikopter (HEMS) responstider.\n\n")
+                f.write("Denne hovedrapport fokuserer primært på ambulance-data fra de 5 regioner. ")
+                f.write("Helikopter-kørsler udgør ca. 0.2% af alle A-prioritet kørsler og kan forekomme i ")
+                f.write("de regionale data, men analyseres grundigt i den separate helikopter-rapport.\n\n")
 
             except Exception as e:
                 logger.warning(f"Could not generate executive summary stats: {e}")

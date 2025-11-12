@@ -1,7 +1,0 @@
-TIDSMÆSSIGE ANALYSER - SÆSONVARIATION
-Region: Sjælland
-A+B-kørsler analyseret: 315,035
-
-Bedste måned: Maj (11.8 min)
-Værste måned: December (12.7 min)
-Variation: 7.6%
