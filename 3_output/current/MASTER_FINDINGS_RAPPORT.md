@@ -1,9 +1,24 @@
 # MASTER FINDINGS RAPPORT
 ## Komplet Analyse af Ambulance Responstider i Danmark
 
-**Genereret:** 12. November 2025 kl. 10:03
+**Genereret:** 04. December 2025 kl. 00:13
 **Periode:** 2021-2025 (5 år)
 **Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling
+
+---
+
+## 📐 METODISK NOTE: RESPONSTIDSDEFINITION
+
+**Hvad vi måler:** Tid fra alarmopkald modtages af AMK til ambulance ankommer (TOTAL ventetid for borgeren)
+
+**Hvorfor vores tal er ca. 2 minutter højere end regionernes:**
+- Regionernes officielle servicemål starter typisk ved *disponering* (når ambulancen sendes afsted)
+- Vores tal inkluderer *visitationstiden* (~2 min) hvor opkaldet vurderes og klassificeres
+- Rigsrevisionen (SR 11/2024) kritiserer netop denne variation i definitioner mellem regioner
+
+**Journalistisk begrundelse:** Vi måler den tid borgeren faktisk oplever fra opkald til hjælp - ikke kun den tid systemet vælger at tælle.
+
+**Se DEL 6 (ALARMTID)** for detaljeret analyse af opdelingen mellem visitation og transport.
 
 ---
 
@@ -12,14 +27,14 @@
 ### 📊 Top 8 Fund:
 
 **1. "Ambulancen kommer fire gange hurtigere i Esbjerg end i Hobro. Din adresse kan betyde 15 minutters forskel."**  
-*3.9x forskel mellem bedste og værste postnummer*
+*3.8x forskel mellem bedste og værste postnummer*
 
-Værste postnummer (7884 Fur: 19.8 min) har 3.9x længere responstid end bedste (6705 Esbjerg Ø: 5.1 min). Variationen følger et geografisk mønster med landdistriker langsommere end bycentre.
+Værste postnummer (7884 Fur: 19.6 min) har 3.8x længere responstid end bedste (6705 Esbjerg Ø: 5.1 min). Variationen følger et geografisk mønster med landdistriker langsommere end bycentre.
 
 **2. "Alle regioner når deres servicemål – men Nordjylland er alligevel 45% langsommere end Syddanmark. Rigsrevisionen kritiserer at regionerne bruger forskellige målemetoder."**  
-*3.5 minutters forskel mellem hurtigste og langsomste region*
+*3.4 minutters forskel mellem hurtigste og langsomste region*
 
-Nordjylland er **44.9% langsommere** end Syddanmark (11.3 min vs 7.8 min). Alle regioner opfylder formelt deres servicemål. Rigsrevisionen (SR 11/2024) påpeger at regionerne opererer med forskellige definitioner og tællemetoder.
+Nordjylland er **43.6% langsommere** end Syddanmark (11.2 min vs 7.8 min). Alle regioner opfylder formelt deres servicemål. Rigsrevisionen (SR 11/2024) påpeger at regionerne opererer med forskellige definitioner og tællemetoder.
 
 **3. "Når trafikken letter om natten, bliver ambulancerne langsommere. Myldretiden kl. 17 er faktisk blandt dagens hurtigste timer."**  
 *20-28% variation mellem tidspunkter på døgnet*
@@ -60,18 +75,14 @@ Alle regioner undtagen Hovedstaden har værste responstider tidlig morgen (kl. 0
 - **1,543,000+ total kørsler** analyseret (inkl. C-prioritet)
 - **1,724,810 total kørsler** analyseret inkl. rekvireringskanal-data
 - **5 års data** (2021-2025) fra alle 5 danske regioner
-- **1074 postnumre** kortlagt
+- **1073 postnumre** kortlagt
 - **Top 10 B/A ekstreme postnumre** alle i Hovedstaden (København centrum)
 
-### ⚠️ Datakvalitet-Note: Helikopter-Data
+### 📝 Note: Helikopter-Analyse
 
-**Vigtigt:** Analysen inkluderer alle A-prioritet kørsler i regionernes data, inklusiv kørsler hvor helikopter var den første responder. De regionale datasæt indeholder ikke oplysninger om hvem der var "først på skadestedet" (ambulance vs. helikopter). Dette kan påvirke postnummer-statistikkerne for øer og yderområder hvor helikopter ofte indsættes.
+**Helikopter-data er analyseret separat:** Se `HELIKOPTER_DATA_RAPPORT.md` for komplet analyse af akutlægehelikopter (HEMS) responstider.
 
-**Eksempler fra data:**
-- Nordjylland: 142 helikopter-kørsler ud af 85,063 A-kørsler (0.17%)
-- Øer som Fur (7884) og Fejø (4944) i Top 10 værste kan være påvirket
-
-**Konsekvens:** Postnummer-responstider kan være en blanding af ambulance- og helikopter-responstider. For at få det fulde billede bør nationale helikopter-data analyseres separat.
+Denne hovedrapport fokuserer primært på ambulance-data fra de 5 regioner. Helikopter-kørsler udgør ca. 0.2% af alle A-prioritet kørsler og kan forekomme i de regionale data, men analyseres grundigt i den separate helikopter-rapport.
 
 ## 📍 DEL 1: POSTNUMMER-ANALYSER
 
@@ -87,15 +98,15 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 
 | Rank | Postnummer | Region | Gennemsnit (min) | Antal Ture |
 |------|------------|--------|------------------|------------|
-| 1 | **7884 Fur** | Midtjylland | 19.8 | 117 |
-| 2 | **8970 Havndal** | Midtjylland | 19.6 | 293 |
-| 3 | **4944 Fejø** | Sjælland | 19.6 | 68 |
-| 4 | **7790 Thyholm** | Midtjylland | 19.0 | 520 |
+| 1 | **7884 Fur** | Midtjylland | 19.6 | 113 |
+| 2 | **4944 Fejø** | Sjælland | 19.6 | 68 |
+| 3 | **8970 Havndal** | Midtjylland | 19.5 | 291 |
+| 4 | **7790 Thyholm** | Midtjylland | 19.0 | 511 |
 | 5 | **5390 Martofte** | Syddanmark | 18.6 | 109 |
 | 6 | **7741 Frøstrup** | Nordjylland | 18.5 | 216 |
 | 7 | **4874 Gedser** | Sjælland | 18.3 | 433 |
 | 8 | **5935 Bagenkop** | Syddanmark | 18.2 | 189 |
-| 9 | **7990 Øster Assels** | Nordjylland | 17.8 | 150 |
+| 9 | **7990 Øster Assels** | Nordjylland | 17.8 | 147 |
 | 10 | **7540 Haderup** | Midtjylland | 17.8 | 212 |
 
 **Note om øer:** Fur (#2) og Fejø (#4) er øer med kun færgeforbindelse. Responstider inkluderer helikopter-kørsler, men datasættet indeholder ikke oplysning om hvem der var først på skadestedet. Se datakvalitet-note i executive summary.
@@ -119,7 +130,7 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 | 9 | **6400 Sønderborg** | Syddanmark | 6.0 | 6,243 |
 | 10 | **6840 Oksbøl** | Syddanmark | 6.1 | 662 |
 
-**Sammenligning:** 7884 Fur (19.8 min) er **3.9x langsommere** end 6705 Esbjerg Ø (5.1 min). Rigsrevisionens notat (SR 11/2024) påpeger at de regionale servicemål dækker over 'store geografiske forskelle'. Forskellen viser den geografiske forskel mellem landdistriker og bycentre.
+**Sammenligning:** 7884 Fur (19.6 min) er **3.8x langsommere** end 6705 Esbjerg Ø (5.1 min). Rigsrevisionens notat (SR 11/2024) påpeger at de regionale servicemål dækker over 'store geografiske forskelle'. Forskellen viser den geografiske forskel mellem landdistriker og bycentre.
 
 ### 1.3 Regional Sammenligning
 
@@ -127,13 +138,15 @@ Analysen viser betydelig geografisk variation i responstider. Forskellen mellem 
 
 | Region | Gennemsnit (min) | Total Ture | Postnumre |
 |--------|------------------|------------|-----------|
-| **Nordjylland** | 11.3 | 85,061 | 75 |
+| **Nordjylland** | 11.2 | 84,919 | 75 |
 | **Sjælland** | 10.4 | 163,420 | 129 |
-| **Hovedstaden** | 10.0 | 235,535 | 567 |
-| **Midtjylland** | 9.6 | 187,065 | 144 |
+| **Hovedstaden** | 10.0 | 235,534 | 567 |
+| **Midtjylland** | 9.6 | 186,798 | 143 |
 | **Syddanmark** | 7.8 | 202,877 | 159 |
 
 *Regional median beregnes på case-niveau - se Tabel 2.3 (Årlig Udvikling)*
+
+*Note: Vores responstider inkluderer visitationstid (~2 min) og er derfor ca. 2 minutter højere end regionernes egne opgørelser, der typisk kun måler fra disponering til ankomst.*
 
 ---
 
@@ -365,66 +378,7 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 
 ---
 
-## 🚁 DEL 7: HELIKOPTER (HEMS) ANALYSE
-
-**Hovedfund:** Helikoptere supplerer ambulanceberedskabet med gennemsnitlig responstid på 26.3 minutter.
-
-**VIGTIGT:** Akutlægehelikoptere er *supplerende* beredskab, ikke primær responder. Data dækker 10,376 missioner (juli 2021 - juni 2025) hvor helikopter var fremme ved patient (ekskl. interhospitale transporter). Helikoptere disponeres primært til hastegrad A, men også til øer og yderområder uanset hastegrad.
-
-### 7.1 National Oversigt
-
-**Responstidskomponenter (alarm → arrival):**
-
-| Komponent | Gennemsnit | Median | 90. Percentil |
-|-----------|------------|--------|---------------|
-| Dispatch Delay | 6.9 min | 6.0 min | 11.0 min |
-| Flight Time | 19.7 min | 17.0 min | 33.0 min |
-| Total Response | 26.3 min | 23.0 min | 41.0 min |
-
-**Dispatch delay** (alarm → airborne): 6.9 min (26% af total tid)  
-**Sammenligning:** Helikopter dispatch delay er ~3.5x længere end ambulance (~2 min)
-
-### 7.2 Regional Fordeling
-
-**Responstider og aktivitet per region:**
-
-| Region | Gns. Responstid | Median | Antal Cases | % af Total |
-|--------|-----------------|--------|-------------|------------|
-| Region Nordjylland | 23.0 min | 22.0 min | 2366 | 22.8% |
-| Region Sjælland | 23.0 min | 22.0 min | 2518 | 24.3% |
-| Region Midtjylland | 24.8 min | 22.0 min | 2824 | 27.2% |
-| Region Syddanmark | 29.3 min | 28.0 min | 2219 | 21.4% |
-| Region Hovedstaden | 56.8 min | 58.0 min | 449 | 4.3% |
-
-**Variation:** Region Hovedstaden har 56.8 min vs. Region Nordjylland 23.0 min (147% længere)
-
-**FUND:** Region Hovedstaden har kun 449 cases (4.3%), mens andre regioner har 2,200-2,800 cases. Dette tyder på at helikopter bruges meget sjældent i Hovedstaden.
-
-### 7.3 Sæsonmæssighed
-
-**Helikopteraktivitet varierer kraftigt over året:**
-
-- Sommermåneder (juni-august): +154% flere udrykninger
-- Højeste aktivitet: Juli (primært trafikulykker og fritidsulykker)
-- Laveste aktivitet: December
-
-### 7.4 Anvendelse i Analyse
-
-**Helikopterdata bruges til:**
-
-1. **Kontekst for "værste postnumre"** - Ø-samfund (Fur, Fejø) får primært helikopter
-2. **Dispatch delay sammenligning** - Helikopter 6.9 min vs. ambulance ~2 min
-3. **Regional variation** - Forklarer hvorfor nogle regioner virker "langsommere"
-4. **Sæsonmønstre** - Sommeren presser både helikopter og ambulance
-
-**ADVARSEL:** Helikopter-responstider må IKKE sammenlignes direkte med ambulance-responstider. Helikoptere bruges til høj-kompleksitet cases (traumer, hjertestop) og lange afstande. De er *supplement*, ikke alternativ til ambulancer.
-
-**Datakilde:** Sundhedsstyrelsen - Nationale helikopterdata (1. juli 2021 - 30. juni 2025)  
-*Driftsdata - ikke kvalitetssikret. Enkelte fejlregistreringer er rensede fra analyse.*
-
----
-
-## 🚑 DEL 8: KØRETØJSTYPE-ANALYSE
+## 🚑 DEL 7: KØRETØJSTYPE-ANALYSE
 
 **Hovedfund:** Ambulancer dominerer med 93% af alle akutte udkald, men lægebiler har længere responstider end standardambulancer.
 
@@ -465,13 +419,8 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 - `20_DISPATCH_DELAY_FUND.txt` - Key findings
 
 *Helikopter-analyse (nationale data):*
-- `helikopter_national_oversigt.xlsx` - National statistik
-- `helikopter_regional_sammenligning.xlsx` - Regional breakdown
-- `helikopter_base_performance.xlsx` - Base performance
-- `helikopter_årlig_udvikling.xlsx` - Årlige trends
-- `helikopter_månedlig_sæsonmønstre.xlsx` - Sæsonvariation
-- `helikopter_postnummer_dækning.xlsx` - Postnummer dækning
-- `HELIKOPTER_FUND.txt` - Key findings
+- **Se separat rapport:** `HELIKOPTER_DATA_RAPPORT.md`
+- Helikopter-data og -filer findes i bilag.zip
 
 *Køretøjstype-analyse (4 regioner):*
 - `vehicle_type_national_distribution.xlsx` - National fordeling
@@ -490,7 +439,7 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 - Total: ~2 millioner individuelle ambulance-kørsler
 - Analyseret: 875,000+ A-prioritet + 668,000+ B-prioritet
 
-**OBS:** Vores analyse fokuserer primært på den officielle responstid (fra disponering til ankomst). For analyse af den 'skjulte' alarmtid før ambulancen sendes afsted, se **DEL 6: ALARMTID**.
+**VIGTIGT - Responstidsdefinition:** Vores analyse måler borgerens TOTALE ventetid, fra alarmopkald modtages til ambulancen ankommer. Dette inkluderer visitationstid (~2 minutter) som ikke medregnes i regionernes officielle servicemål. Vi har valgt denne definition fordi den afspejler borgerens reelle oplevelse. Regionernes 'officielle' responstid starter typisk først ved disponering, og vil derfor være ca. 2 minutter lavere end vores tal. Se **DEL 6: ALARMTID** for detaljeret analyse.
 
 ---
 
@@ -518,7 +467,7 @@ Data fra Nordjylland og Syddanmark viser at ca. 22% af total ventetid (~2 minutt
 
 ---
 
-**RAPPORT GENERERET: 12. November 2025 kl. 10:03**
+**RAPPORT GENERERET: 04. December 2025 kl. 00:13**
 
 *Genereret automatisk af Ambulance Pipeline*
 

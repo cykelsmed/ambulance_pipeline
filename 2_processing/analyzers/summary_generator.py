@@ -44,6 +44,19 @@ def generate_master_findings_report(output_dir):
             f.write("**Datasæt:** Postnummer + Tidsmæssige mønstre + Systemanalyser + Årlig udvikling\n\n")
             f.write("---\n\n")
 
+            # Methodology box - clear definition of what we measure
+            f.write("## 📐 METODISK NOTE: RESPONSTIDSDEFINITION\n\n")
+            f.write("**Hvad vi måler:** Tid fra alarmopkald modtages af AMK til ambulance ankommer ")
+            f.write("(TOTAL ventetid for borgeren)\n\n")
+            f.write("**Hvorfor vores tal er ca. 2 minutter højere end regionernes:**\n")
+            f.write("- Regionernes officielle servicemål starter typisk ved *disponering* (når ambulancen sendes afsted)\n")
+            f.write("- Vores tal inkluderer *visitationstiden* (~2 min) hvor opkaldet vurderes og klassificeres\n")
+            f.write("- Rigsrevisionen (SR 11/2024) kritiserer netop denne variation i definitioner mellem regioner\n\n")
+            f.write("**Journalistisk begrundelse:** Vi måler den tid borgeren faktisk oplever fra opkald til hjælp ")
+            f.write("- ikke kun den tid systemet vælger at tælle.\n\n")
+            f.write("**Se DEL 6 (ALARMTID)** for detaljeret analyse af opdelingen mellem visitation og transport.\n\n")
+            f.write("---\n\n")
+
             # Executive Summary - TV2 FOCUSED
             f.write("## 📋 HOVEDHISTORIER - KEY FINDINGS\n\n")
 
@@ -278,6 +291,8 @@ def _write_postal_code_section(f, output_dir):
             f.write(f"{int(row['Total_ture']):,} | {int(row['Antal_postnumre'])} |\n")
         f.write("\n")
         f.write("*Regional median beregnes på case-niveau - se Tabel 2.3 (Årlig Udvikling)*\n\n")
+        f.write("*Note: Vores responstider inkluderer visitationstid (~2 min) og er derfor ca. 2 minutter ")
+        f.write("højere end regionernes egne opgørelser, der typisk kun måler fra disponering til ankomst.*\n\n")
         f.write("---\n\n")
 
     except Exception as e:
@@ -982,9 +997,12 @@ def _write_footer(f, output_dir):
     f.write("- Total: ~2 millioner individuelle ambulance-kørsler\n")
     f.write("- Analyseret: 875,000+ A-prioritet + 668,000+ B-prioritet\n\n")
 
-    # NOTE: Reference to alarm time analysis (detailed coverage in DEL 6)
-    f.write("**OBS:** Vores analyse fokuserer primært på den officielle responstid (fra disponering til ankomst). ")
-    f.write("For analyse af den 'skjulte' alarmtid før ambulancen sendes afsted, se **DEL 6: ALARMTID**.\n\n")
+    # NOTE: Clear definition of what we measure (addresses Region H feedback)
+    f.write("**VIGTIGT - Responstidsdefinition:** Vores analyse måler borgerens TOTALE ventetid, fra alarmopkald ")
+    f.write("modtages til ambulancen ankommer. Dette inkluderer visitationstid (~2 minutter) som ikke medregnes ")
+    f.write("i regionernes officielle servicemål. Vi har valgt denne definition fordi den afspejler borgerens ")
+    f.write("reelle oplevelse. Regionernes 'officielle' responstid starter typisk først ved disponering, og vil ")
+    f.write("derfor være ca. 2 minutter lavere end vores tal. Se **DEL 6: ALARMTID** for detaljeret analyse.\n\n")
 
     f.write("---\n\n")
     f.write("**Hvad vi har gjort med rådata:**\n\n")
